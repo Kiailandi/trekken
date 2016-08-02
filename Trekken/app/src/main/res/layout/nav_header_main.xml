@@ -31,4 +31,11 @@
         android:layout_height="wrap_content"
         android:text="Stato sensori ON/OFF" />
 
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/switchForActionBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="" />
+
 </LinearLayout>
+<!--TODO  magari funziona RelativeLayout ?-->
