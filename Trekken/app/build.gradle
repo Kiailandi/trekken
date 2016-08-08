@@ -29,3 +29,5 @@ dependencies {
 }
 
 //TODO Qui ci sarà da mettere il plugin per Google Play Services e relative dipendenze
+
+apply plugin: 'com.google.gms.google-services'

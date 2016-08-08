@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "214930567567",
+    "firebase_url": "https://trekken-c7b9a.firebaseio.com",
+    "project_id": "trekken-c7b9a",
+    "storage_bucket": "trekken-c7b9a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:214930567567:android:c1be4b2710129662",
+        "android_client_info": {
+          "package_name": "com.trekken"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "214930567567-a7kp6hsjjejvfi05usbj2u6ia6hpch7j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQUHYAaFgQGH6Gq4RHg2O2fMqDxrEIj4U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
