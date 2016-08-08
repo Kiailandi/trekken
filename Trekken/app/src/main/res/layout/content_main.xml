@@ -19,5 +19,4 @@
         android:background="@android:color/holo_red_dark"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true" />
-    <!-- TODO check se mette colore rosso -->
 </RelativeLayout>

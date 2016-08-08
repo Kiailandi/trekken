@@ -29,13 +29,13 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Stato sensori ON/OFF" />
+        android:text="Lorem Ipsum" />
 
     <android.support.v7.widget.SwitchCompat
         android:id="@+id/switchForActionBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="" />
+        android:text="Sensori  " />
 
 </LinearLayout>
 <!--TODO  magari funziona RelativeLayout ?-->
