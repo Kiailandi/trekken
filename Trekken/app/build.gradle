@@ -26,6 +26,18 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:support-v4:24.1.1'
     compile 'com.android.support:design:24.1.1'
+
+    //TOCHECK
+    //Firebase Realtime Database
+    compile 'com.google.firebase:firebase-database:9.2.1'
+
+    //TOCHECK
+    //Includes all FirebaseUI libraries
+    compile 'com.firebaseui:firebase-ui:0.4.3'
+
+    //TOCHECK
+    //Play services auth 9.4.0 -> firebase UI auth 0.4.4
+    compile 'com.google.android.gms:play-services-auth:9.2.1'
 }
 
 //TODO Qui ci sarà da mettere il plugin per Google Play Services e relative dipendenze
