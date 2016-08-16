@@ -1,9 +1,14 @@
 package com.trekken;
 
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -36,6 +41,14 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+
+        Resources res = getResources();
+        Bitmap src = BitmapFactory.decodeResource(res, R.drawable.rospo);
+        //TODO finish this o metterlo nell xml?
+        final RoundedBitmapDrawable dr =
+                RoundedBitmapDrawableFactory.create(res, src);
+        dr.setCornerRadius(Math.max(src.getWidth(), src.getHeight()) / 2.0f);
+
         // Material Design
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -45,15 +58,19 @@ public class MainActivity extends AppCompatActivity
                 super.onDrawerClosed(view);
                 //getActionBar().setTitle(mTitle);
             }
-            
+
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 //getActionBar().setTitle(mDrawerTitle);
+
+                ImageView imgProfilo = (ImageView) findViewById(R.id.imageView);
+                imgProfilo.setImageDrawable(dr);
+
                 final SwitchCompat swCompat = (SwitchCompat) findViewById(R.id.switchForActionBar);
-                // Non va!
                 if (!swCompat.isChecked()) {
                     ImageView img = (ImageView) findViewById(R.id.imageView2);
-                    img.setBackgroundColor(Color.BLUE);
+                    //img.setBackgroundColor(Color.BLUE);
+                    img.setImageResource(R.drawable.rospo);
                 }
 
                 swCompat.setOnClickListener(new View.OnClickListener() {

@@ -22,14 +22,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="Mario Rossi"
+        android:text="@string/nome_cognome"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Lorem Ipsum" />
+        android:text="@string/username" />
 
     <android.support.v7.widget.SwitchCompat
         android:id="@+id/switchForActionBar"
