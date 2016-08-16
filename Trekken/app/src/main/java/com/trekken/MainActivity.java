@@ -3,7 +3,6 @@ package com.trekken;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -44,7 +43,7 @@ public class MainActivity extends AppCompatActivity
 
         Resources res = getResources();
         Bitmap src = BitmapFactory.decodeResource(res, R.drawable.rospo);
-        //TODO finish this o metterlo nell xml?
+        //TODO metterlo nell xml?
         final RoundedBitmapDrawable dr =
                 RoundedBitmapDrawableFactory.create(res, src);
         dr.setCornerRadius(Math.max(src.getWidth(), src.getHeight()) / 2.0f);
@@ -63,7 +62,7 @@ public class MainActivity extends AppCompatActivity
                 super.onDrawerOpened(drawerView);
                 //getActionBar().setTitle(mDrawerTitle);
 
-                ImageView imgProfilo = (ImageView) findViewById(R.id.imageView);
+                ImageView imgProfilo = (ImageView) findViewById(R.id.imageProfile);
                 imgProfilo.setImageDrawable(dr);
 
                 final SwitchCompat swCompat = (SwitchCompat) findViewById(R.id.switchForActionBar);
