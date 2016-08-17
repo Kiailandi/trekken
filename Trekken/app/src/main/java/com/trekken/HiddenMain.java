@@ -31,20 +31,19 @@ public class HiddenMain extends Activity {
         SharedPreferences sharedPref = this.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         String textData = sharedPref.getString("Logged", "no");
 
+        // Se non ce salvato nessuno nelle SharedPreferences lancia Login
         if(textData.equals("no")) {
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             finish();
             startActivity(intent);
         }
 
-        //TODO mettere oppurtuna Activity di Login
-/*      else
-        {
-            Intent intent = new Intent(this,LoginActivity.class);
+        else {
+            Intent intent = new Intent(this,MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             finish();
             startActivity(intent);
-        }*/
+        }
     }
 }
