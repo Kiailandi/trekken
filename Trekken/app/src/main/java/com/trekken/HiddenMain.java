@@ -28,8 +28,8 @@ public class HiddenMain extends Activity {
             Log.i(ACCESSIBILITY_SERVICE, s.getName());
         }
 
-        SharedPreferences sharedPref = this.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        String textData = sharedPref.getString("Logged", "no");
+        SharedPreferences sharedPref = this.getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
+        String textData = sharedPref.getString("logged", "no");
 
         // Se non ce salvato nessuno nelle SharedPreferences lancia Login
         if(textData.equals("no")) {
