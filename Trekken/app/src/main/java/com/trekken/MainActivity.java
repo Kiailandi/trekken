@@ -1,5 +1,7 @@
 package com.trekken;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,6 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
@@ -41,7 +44,11 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        //Caricamento email utente
+        SharedPreferences sharedPref = this.getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
+        final String emailPreferences = sharedPref.getString("email", "rospo");
 
+        //Caricamento immagine utente
         Resources res = getResources();
         Bitmap src = BitmapFactory.decodeResource(res, R.drawable.rospo);
         //TODO metterlo nell xml?
@@ -62,6 +69,9 @@ public class MainActivity extends AppCompatActivity
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 //getActionBar().setTitle(mDrawerTitle);
+
+                TextView txtEmail = (TextView) findViewById(R.id.textView);
+                txtEmail.setText(emailPreferences);
 
                 ImageView imgProfilo = (ImageView) findViewById(R.id.imageProfile);
                 imgProfilo.setImageDrawable(dr);
