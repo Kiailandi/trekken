@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity
 
     private SensorManager snrManager;
     private Sensor snrAccelerometer;
+    private SensorEventListener listenerAccelerometer;
     private double rootSquare;
 
     @Override
@@ -56,6 +57,27 @@ public class MainActivity extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
+
+        listenerAccelerometer = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                snrAccelerometer = sensorEvent.sensor;
+                //Log.i("Accelerometer1", (Float.toString(sensorEvent.values[0])));
+                //Log.i("Accelerometer2", (Float.toString(sensorEvent.values[1])));
+                //Log.i("Accelerometer3", (Float.toString(sensorEvent.values[2])));
+                if (snrAccelerometer.getType() == Sensor.TYPE_ACCELEROMETER) {
+                    //Vectorial sum of x,y,z axis
+                    rootSquare = Math.sqrt(Math.pow(sensorEvent.values[0], 2) + Math.pow(sensorEvent.values[1], 2) + Math.pow(sensorEvent.values[2], 2));
+                    if (rootSquare < 2.0) //2.0 threshold detecting free fall of the phone
+                        fallDetected();
+                }
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int i) {
+
+            }
+        };
 
         //Caricamento email utente
         SharedPreferences sharedPref = this.getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
@@ -120,30 +142,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void stopSensors() {
+        snrManager.unregisterListener(listenerAccelerometer);
     }
 
     private void startSensors() {
-        SensorEventListener listenerAccelerometer = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent sensorEvent) {
-                snrAccelerometer = sensorEvent.sensor;
-                //Log.i("Accelerometer1", (Float.toString(sensorEvent.values[0])));
-                //Log.i("Accelerometer2", (Float.toString(sensorEvent.values[1])));
-                //Log.i("Accelerometer3", (Float.toString(sensorEvent.values[2])));
-                if (snrAccelerometer.getType() == Sensor.TYPE_ACCELEROMETER) {
-                    rootSquare = Math.sqrt(Math.pow(sensorEvent.values[0], 2) + Math.pow(sensorEvent.values[1], 2) + Math.pow(sensorEvent.values[2], 2));
-                    if (rootSquare < 2.0)
-                        fallDetected();
-                }
-            }
-
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int i) {
-
-            }
-        };
         snrManager.registerListener(listenerAccelerometer, snrAccelerometer, SensorManager.SENSOR_DELAY_UI);
-
     }
 
     private void fallDetected() {
