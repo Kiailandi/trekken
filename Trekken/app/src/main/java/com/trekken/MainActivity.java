@@ -127,13 +127,13 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
                 snrAccelerometer = sensorEvent.sensor;
-
+                //Log.i("Accelerometer1", (Float.toString(sensorEvent.values[0])));
+                //Log.i("Accelerometer2", (Float.toString(sensorEvent.values[1])));
+                //Log.i("Accelerometer3", (Float.toString(sensorEvent.values[2])));
                 if (snrAccelerometer.getType() == Sensor.TYPE_ACCELEROMETER) {
-                    rootSquare = Math.sqrt(Math.pow(sensorEvent.values[0], 2) + Math.pow(sensorEvent.values[0], 2) + Math.pow(sensorEvent.values[0], 2));
-                    if (rootSquare < 2.0) {
-                        //Toast.makeText(this, "Fall detected", Toast.LENGTH_SHORT).show();
-                        // sendSMS(); Dopo aver aspettato un timer!
-                    }
+                    rootSquare = Math.sqrt(Math.pow(sensorEvent.values[0], 2) + Math.pow(sensorEvent.values[1], 2) + Math.pow(sensorEvent.values[2], 2));
+                    if (rootSquare < 2.0)
+                        fallDetected();
                 }
             }
 
@@ -142,6 +142,13 @@ public class MainActivity extends AppCompatActivity
 
             }
         };
+        snrManager.registerListener(listenerAccelerometer, snrAccelerometer, SensorManager.SENSOR_DELAY_UI);
+
+    }
+
+    private void fallDetected() {
+        Toast.makeText(this, "Fall detected", Toast.LENGTH_SHORT).show();
+        // sendSMS(); Dopo aver aspettato un timer!
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
