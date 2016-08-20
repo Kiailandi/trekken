@@ -41,6 +41,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="10dp"
             android:layout_weight=".60"
+            android:checked="true"
             android:text="Sensori " />
     </LinearLayout>
 </LinearLayout>

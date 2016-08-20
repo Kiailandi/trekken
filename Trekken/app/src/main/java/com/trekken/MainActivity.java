@@ -12,6 +12,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -122,15 +123,27 @@ public class MainActivity extends AppCompatActivity
             //finish();
             startActivity(intent);
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_signout) {
+            //Delete stored informations about user's login
+            SharedPreferences sharedPref = this.getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.remove("logged");
+            editor.remove("email");
+            editor.apply();
 
-        } else if (id == R.id.nav_send) {
+            //Going back to Login Activity
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            finish(); //calls onDestroy()
+            startActivity(intent);
 
+        } else if (id == R.id.nav_close) {
+            finish(); //calls onDestroy(), free some resources
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        //dopo aver premuto un tasto del menu, chiudilo
+        //When an item in the Drawer gets pressed, close the Drawer
         return true;
     }
 
