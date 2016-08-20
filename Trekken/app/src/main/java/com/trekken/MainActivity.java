@@ -6,6 +6,10 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -29,10 +33,17 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private SensorManager snrManager;
+    private Sensor snrAccelerometer;
+    private double rootSquare;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        snrManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        snrAccelerometer = snrManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -54,8 +65,7 @@ public class MainActivity extends AppCompatActivity
         Resources res = getResources();
         Bitmap src = BitmapFactory.decodeResource(res, R.drawable.rospo);
         //TODO metterlo nell xml?
-        final RoundedBitmapDrawable dr =
-                RoundedBitmapDrawableFactory.create(res, src);
+        final RoundedBitmapDrawable dr = RoundedBitmapDrawableFactory.create(res, src);
         dr.setCornerRadius(Math.max(src.getWidth(), src.getHeight()) / 2.0f);
 
         // Material Design
@@ -88,10 +98,13 @@ public class MainActivity extends AppCompatActivity
                 swCompat.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (swCompat.isChecked())
+                        if (swCompat.isChecked()) {
                             Toast.makeText(MainActivity.this, "switch checked", Toast.LENGTH_LONG).show();
-                        else
+                            startSensors();
+                        } else {
                             Toast.makeText(MainActivity.this, "switch unchecked", Toast.LENGTH_LONG).show();
+                            stopSensors();
+                        }
                     }
                 });
             }
@@ -102,6 +115,33 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        startSensors();
+    }
+
+    private void stopSensors() {
+    }
+
+    private void startSensors() {
+        SensorEventListener listenerAccelerometer = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                snrAccelerometer = sensorEvent.sensor;
+
+                if (snrAccelerometer.getType() == Sensor.TYPE_ACCELEROMETER) {
+                    rootSquare = Math.sqrt(Math.pow(sensorEvent.values[0], 2) + Math.pow(sensorEvent.values[0], 2) + Math.pow(sensorEvent.values[0], 2));
+                    if (rootSquare < 2.0) {
+                        //Toast.makeText(this, "Fall detected", Toast.LENGTH_SHORT).show();
+                        // sendSMS(); Dopo aver aspettato un timer!
+                    }
+                }
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int i) {
+
+            }
+        };
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
