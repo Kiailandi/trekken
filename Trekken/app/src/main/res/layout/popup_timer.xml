@@ -21,5 +21,6 @@
         android:layout_height="wrap_content"
         android:text="Stop Timer"
         android:id="@+id/btnDismissPopup"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="20dp" />
 </LinearLayout>

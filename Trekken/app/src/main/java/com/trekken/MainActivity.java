@@ -100,9 +100,21 @@ public class MainActivity extends AppCompatActivity
         //Caricamento immagine utente
         Resources res = getResources();
         Bitmap src = BitmapFactory.decodeResource(res, R.drawable.rospo);
-        //TODO metterlo nell xml?
         final RoundedBitmapDrawable dr = RoundedBitmapDrawableFactory.create(res, src);
         dr.setCornerRadius(Math.max(src.getWidth(), src.getHeight()) / 2.0f);
+
+        //Trovo la view della Nav Bar per cambiare gli elementi all interno (senza inflate)
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View headerLayout = navigationView.getHeaderView(0);
+
+        //Metto email utente da SharedPreferences
+        TextView txtEmail = (TextView) headerLayout.findViewById(R.id.textView);
+        txtEmail.setText(emailPreferences);
+
+        //Metto immagine utente
+        ImageView imgProfilo = (ImageView) headerLayout.findViewById(R.id.imageProfile);
+        imgProfilo.setImageDrawable(dr);
 
         // Material Design
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -118,12 +130,7 @@ public class MainActivity extends AppCompatActivity
                 super.onDrawerOpened(drawerView);
                 //getActionBar().setTitle(mDrawerTitle);
 
-                TextView txtEmail = (TextView) findViewById(R.id.textView);
-                txtEmail.setText(emailPreferences);
-
-                ImageView imgProfilo = (ImageView) findViewById(R.id.imageProfile);
-                imgProfilo.setImageDrawable(dr);
-
+                //Testing stuff
                 final SwitchCompat swCompat = (SwitchCompat) findViewById(R.id.switchForActionBar);
                 if (!swCompat.isChecked()) {
                     ImageView img = (ImageView) findViewById(R.id.imageView2);
@@ -134,13 +141,11 @@ public class MainActivity extends AppCompatActivity
                 swCompat.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (swCompat.isChecked()) {
-                            Toast.makeText(MainActivity.this, "switch checked", Toast.LENGTH_LONG).show();
+                        if (swCompat.isChecked())
                             startSensors();
-                        } else {
-                            Toast.makeText(MainActivity.this, "switch unchecked", Toast.LENGTH_LONG).show();
+                        else
                             stopSensors();
-                        }
+
                     }
                 });
             }
@@ -148,9 +153,6 @@ public class MainActivity extends AppCompatActivity
 
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
 
         startSensors();
     }
@@ -180,18 +182,16 @@ public class MainActivity extends AppCompatActivity
 
         //Rotate 90 degrees
         Animation anRotate = new RotateAnimation(0.0f, 90.0f, 250f, 273f);
-        //anRotate.setFillAfter(true);
-        //pb.startAnimation(anRotate);
         anSet.addAnimation(anRotate);
 
+        //Move back to the right
         Animation anTranslate = new TranslateAnimation(0f, 263f, 0f, 0f);
-        //anTranslate.setFillAfter(true);
-        //pb.startAnimation(anTranslate);
         anSet.addAnimation(anTranslate);
 
         anSet.setInterpolator(new DecelerateInterpolator());
         anSet.setFillAfter(true);
 
+        //Animate the Progress Bar
         anSet.start();
         pb.startAnimation(anSet);
 
