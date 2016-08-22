@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/popup_layout"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="250dp"
+        android:layout_height="273dp"
+        android:id="@+id/progressBarTimer"
+        android:layout_gravity="center_horizontal"
+        android:indeterminate="false"
+        android:progress="45"
+        android:max="48"
+        android:progressDrawable="@drawable/circular_progress_bar" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stop Timer"
+        android:id="@+id/btnDismissPopup"
+        android:layout_gravity="center_horizontal" />
+</LinearLayout>

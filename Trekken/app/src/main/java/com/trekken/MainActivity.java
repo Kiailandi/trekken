@@ -15,8 +15,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -26,7 +28,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.RotateAnimation;
+import android.view.animation.TranslateAnimation;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +47,7 @@ public class MainActivity extends AppCompatActivity
     private Sensor snrAccelerometer;
     private SensorEventListener listenerAccelerometer;
     private double rootSquare;
+    static final double threshold = 3.0; //TODO rimettere 1.5 a fine test
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +79,11 @@ public class MainActivity extends AppCompatActivity
                 if (snrAccelerometer.getType() == Sensor.TYPE_ACCELEROMETER) {
                     //Vectorial sum of x,y,z axis
                     rootSquare = Math.sqrt(Math.pow(sensorEvent.values[0], 2) + Math.pow(sensorEvent.values[1], 2) + Math.pow(sensorEvent.values[2], 2));
-                    if (rootSquare < 2.0) //2.0 threshold detecting free fall of the phone
+                    if (rootSquare < threshold) // threshold detecting free fall of the phone, lower is more precise
+                    {
+                        stopSensors();
                         fallDetected();
+                    }
                 }
             }
 
@@ -150,8 +164,47 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void fallDetected() {
-        Toast.makeText(this, "Fall detected", Toast.LENGTH_SHORT).show();
-        // sendSMS(); Dopo aver aspettato un timer!
+        //Toast.makeText(this, "Fall detected", Toast.LENGTH_SHORT).show();
+
+        //AlertDialog setup, inflating his view and finding ProgressBar and Button
+        AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
+        helpBuilder.setTitle("Pop Up");
+
+        LayoutInflater inflater = getLayoutInflater();
+        View popupLayout = inflater.inflate(R.layout.popup_timer, (ViewGroup) MainActivity.this.findViewById(R.id.popup_layout));
+        helpBuilder.setView(popupLayout);
+        final AlertDialog helpDialog = helpBuilder.create();
+
+        ProgressBar pb = (ProgressBar) popupLayout.findViewById(R.id.progressBarTimer);
+        AnimationSet anSet = new AnimationSet(true);
+
+        //Rotate 90 degrees
+        Animation anRotate = new RotateAnimation(0.0f, 90.0f, 250f, 273f);
+        //anRotate.setFillAfter(true);
+        //pb.startAnimation(anRotate);
+        anSet.addAnimation(anRotate);
+
+        Animation anTranslate = new TranslateAnimation(0f, 263f, 0f, 0f);
+        //anTranslate.setFillAfter(true);
+        //pb.startAnimation(anTranslate);
+        anSet.addAnimation(anTranslate);
+
+        anSet.setInterpolator(new DecelerateInterpolator());
+        anSet.setFillAfter(true);
+
+        anSet.start();
+        pb.startAnimation(anSet);
+
+        Button btnDismiss = (Button) popupLayout.findViewById(R.id.btnDismissPopup);
+        btnDismiss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startSensors();
+                helpDialog.dismiss();
+            }
+        });
+
+        helpDialog.show();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
