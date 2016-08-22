@@ -11,6 +11,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity
     private SensorEventListener listenerAccelerometer;
     private double rootSquare;
     static final double threshold = 3.0; //TODO rimettere 1.5 a fine test
+    Handler pbHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,18 +168,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void fallDetected() {
+        //TODO farlo funzionare anche a cell bloccato
         //Toast.makeText(this, "Fall detected", Toast.LENGTH_SHORT).show();
 
         //AlertDialog setup, inflating his view and finding ProgressBar and Button
         AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
-        helpBuilder.setTitle("Pop Up");
+        helpBuilder.setTitle("Fall Detected !");
 
         LayoutInflater inflater = getLayoutInflater();
         View popupLayout = inflater.inflate(R.layout.popup_timer, (ViewGroup) MainActivity.this.findViewById(R.id.popup_layout));
         helpBuilder.setView(popupLayout);
         final AlertDialog helpDialog = helpBuilder.create();
 
-        ProgressBar pb = (ProgressBar) popupLayout.findViewById(R.id.progressBarTimer);
+        final ProgressBar pb = (ProgressBar) popupLayout.findViewById(R.id.progressBarTimer);
         AnimationSet anSet = new AnimationSet(true);
 
         //Rotate 90 degrees
@@ -205,7 +208,25 @@ public class MainActivity extends AppCompatActivity
         });
 
         helpDialog.show();
+
+        pbHandler = new Handler();
+
+        final Runnable r = new Runnable() {
+            public void run() {
+                if (pb.getProgress() > 1)
+                    pb.setProgress(pb.getProgress() - 1);
+                    //Timer funziona ma non disegna!
+                else {
+                    //Other stuff
+                    helpDialog.dismiss();
+                }
+                pbHandler.postDelayed(this, 1000);
+            }
+        };
+
+        pbHandler.postDelayed(r, 1000);
     }
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
