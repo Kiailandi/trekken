@@ -325,7 +325,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 if (pieces[0].equals(mEmail)) {
                     // Account exists, return true if the password matches.
                     if (pieces[1].equals(mPassword)) {
-                        //TODO METTERE SHAREDPREFERENCES
                         SharedPreferences sharedPref = mActivity.getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
 
                         SharedPreferences.Editor editor = sharedPref.edit();

@@ -5,7 +5,7 @@
             android:innerRadiusRatio="3"
             android:shape="ring"
             android:thicknessRatio="7.0"
-            android:useLevel="false">
+            android:useLevel="true">
             <gradient
                 android:startColor="#fb0000"
                 android:endColor="#00FF00"
