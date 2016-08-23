@@ -10,6 +10,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -224,32 +227,39 @@ public class MainActivity extends AppCompatActivity
         anSet.start();
         pb.startAnimation(anSet);
 
+        //Setting up the alarm sound
+        Uri uriAlarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        final Ringtone alarm = RingtoneManager.getRingtone(getApplicationContext(), uriAlarm);
+
         Button btnDismiss = (Button) popupLayout.findViewById(R.id.btnDismissPopup);
         btnDismiss.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                alarm.stop();
                 startSensors();
                 helpDialog.dismiss();
             }
         });
 
         helpDialog.show();
+        alarm.play();
 
+        // Handler functioning as a Timer with tick = 1s
+        // Decrease the value of the ProgressBar until stopped by Button or it will send an Emergency Sms
         pbHandler = new Handler();
-
         final Runnable r = new Runnable() {
             public void run() {
                 if (pb.getProgress() > 1)
                     pb.setProgress(pb.getProgress() - 1);
-                    //Timer funziona ma non disegna!
                 else {
-                    //Other stuff
+                    //sendSMS
+                    alarm.stop();
+                    startSensors();
                     helpDialog.dismiss();
                 }
                 pbHandler.postDelayed(this, 1000);
             }
         };
-
         pbHandler.postDelayed(r, 1000);
     }
 
