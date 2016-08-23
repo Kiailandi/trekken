@@ -12,6 +12,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
@@ -44,6 +45,10 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private NavigationView navigationView;
+    private View headerLayout;
+    private SharedPreferences defaultPref;
+    private SharedPreferences sharedPref;
     private SensorManager snrManager;
     private Sensor snrAccelerometer;
     private SensorEventListener listenerAccelerometer;
@@ -96,8 +101,12 @@ public class MainActivity extends AppCompatActivity
         };
 
         //Caricamento email utente
-        SharedPreferences sharedPref = this.getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
+        sharedPref = this.getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
         final String emailPreferences = sharedPref.getString("email", "rospo");
+
+        //Caricamento Dysplay Name
+        defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String dysplayName = defaultPref.getString("example_text", "banana");
 
         //Caricamento immagine utente
         Resources res = getResources();
@@ -106,13 +115,17 @@ public class MainActivity extends AppCompatActivity
         dr.setCornerRadius(Math.max(src.getWidth(), src.getHeight()) / 2.0f);
 
         //Trovo la view della Nav Bar per cambiare gli elementi all interno (senza inflate)
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        View headerLayout = navigationView.getHeaderView(0);
+        headerLayout = navigationView.getHeaderView(0);
 
         //Metto email utente da SharedPreferences
         TextView txtEmail = (TextView) headerLayout.findViewById(R.id.textView);
         txtEmail.setText(emailPreferences);
+
+        //Metto Dysplay Name utente da DefaultSharedPreferences
+        TextView txtName = (TextView) headerLayout.findViewById(R.id.textViewName);
+        txtName.setText(dysplayName);
 
         //Metto immagine utente
         ImageView imgProfilo = (ImageView) headerLayout.findViewById(R.id.imageProfile);
@@ -157,6 +170,19 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         startSensors();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        //Caricamento Dysplay Name
+        defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String dysplayName = defaultPref.getString("example_text", "banana");
+
+        //Metto Dysplay Name utente da DefaultSharedPreferences
+        TextView txtName = (TextView) headerLayout.findViewById(R.id.textViewName);
+        txtName.setText(dysplayName);
     }
 
     private void stopSensors() {
