@@ -22,7 +22,9 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SwitchCompat;
+import android.telephony.SmsManager;
 import android.util.Log;
+import android.util.StringBuilderPrinter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -109,7 +111,7 @@ public class MainActivity extends AppCompatActivity
 
         //Caricamento Dysplay Name
         defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String dysplayName = defaultPref.getString("example_text", "banana");
+        String dysplayName = defaultPref.getString("emergency_number", "banana");
 
         //Caricamento immagine utente
         Resources res = getResources();
@@ -181,7 +183,7 @@ public class MainActivity extends AppCompatActivity
 
         //Caricamento Dysplay Name
         defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String dysplayName = defaultPref.getString("example_text", "banana");
+        String dysplayName = defaultPref.getString("emergency_number", "banana");
 
         //Metto Dysplay Name utente da DefaultSharedPreferences
         TextView txtName = (TextView) headerLayout.findViewById(R.id.textViewName);
@@ -252,7 +254,7 @@ public class MainActivity extends AppCompatActivity
                 if (pb.getProgress() > 1)
                     pb.setProgress(pb.getProgress() - 1);
                 else {
-                    //sendSMS
+                    sendEmergencySMS();
                     alarm.stop();
                     startSensors();
                     helpDialog.dismiss();
@@ -261,6 +263,23 @@ public class MainActivity extends AppCompatActivity
             }
         };
         pbHandler.postDelayed(r, 1000);
+    }
+
+    private void sendEmergencySMS() {
+        //Log.i("Send SMS", "");
+        String phoneNo = defaultPref.getString("emergency_number", "banana");
+        String user = defaultPref.getString("display_name", "banana");
+
+        String message = "Trekken user " + user + " might be in danger while hiking and has request your aid!";
+
+        try {
+            SmsManager smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage(phoneNo, null, message, null, null);
+            Toast.makeText(this, "SMS sent.", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "SMS failed!", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 
 
