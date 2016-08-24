@@ -95,4 +95,22 @@
     <string name="pref_default_emergency_number">3289529832</string>
     <string name="pref_title_emergency_number">Emergency Number</string>
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false"> AIzaSyAjHK2bTs5zEWA52m9NoSaG0zGwQHD2BF4 </string>
+
+    <string name="launch_title">Trekken</string>
+    <string name="sign_in">Lets Go</string>
+    <string name="auth_providers_header">Login with:</string>
+    <string name="email_label">Email</string>
+    <string name="google_label">Google</string>
+    <string name="unknown_response">Unexpected onActivityResult response code</string>
+    <string name="ok_label">OK</string>
+    <string name="unknown_sign_in_response">Unknown response from AuthUI sign-in</string>
+    <string name="sign_in_cancelled">Sign in cancelled</string>
+    <string name="signed_in_header">You are signed in!</string>
+    <string name="sign_out">Sign out</string>
+    <string name="delete_account_label">Delete account</string>
+    <string name="sign_out_failed">Sign out failed</string>
+    <string name="delete_account_failed">Delete account failed</string>
+    <string name="user_profile_header">User profile:</string>
+    <string name="profile_picture_content_desc">Profile picture</string>
+    <string name="default_theme">Default theme</string>
 </resources>
