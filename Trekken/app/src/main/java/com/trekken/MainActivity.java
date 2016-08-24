@@ -319,8 +319,10 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        snrManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        snrAccelerometer = snrManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        //Checking the presence of googlePlayServices
+        if (!isGooglePlayServicesAvailable()) {
+            finish(); // drastic!
+        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -334,6 +336,59 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        //region Button Listeners Setup
+        final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+        txtLog = (EditText) findViewById(R.id.txtLog);
+        btnStart = (Button) findViewById(R.id.btnStart);
+
+        btnStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                writeLogsAndroid("btnStart .........");
+                googleApiClient.connect();
+            }
+        });
+
+        btnStop = (Button) findViewById(R.id.btnStop);
+
+        btnStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                writeLogsAndroid("btnStop .........");
+                googleApiClient.disconnect();
+            }
+        });
+
+        btnLog = (Button) findViewById(R.id.btnLog);
+
+        btnLog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                writeLogs();
+            }
+        });
+
+        btnLoad = (Button) findViewById(R.id.btnLoad);
+
+        btnLoad.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(MainActivity.this, FileBrowserActivity.class);
+                myIntent.putExtra("key", 15); //Optional parameters
+                //MainActivity.this.startActivity(myIntent);
+                startActivityForResult(myIntent, 100);
+            }
+        });
+
+        txtLog.setTextIsSelectable(true);
+        txtLog.setText("Map_v2 onCreate " + DateFormat.getTimeInstance().format(new Date()) + " .........");
+        //endregion
+
+        //region Accelerometer
+        snrManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        snrAccelerometer = snrManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         listenerAccelerometer = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
@@ -357,7 +412,9 @@ public class MainActivity extends AppCompatActivity
 
             }
         };
+        //endregion
 
+        //region Getting Data
         //Caricamento email utente
         sharedPref = this.getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
         final String emailPreferences = sharedPref.getString("email", "rospo");
@@ -388,8 +445,9 @@ public class MainActivity extends AppCompatActivity
         //Metto immagine utente
         ImageView imgProfilo = (ImageView) headerLayout.findViewById(R.id.imageProfile);
         imgProfilo.setImageDrawable(dr);
+        //endregion
 
-        // Material Design
+        //region Material Design
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
@@ -417,10 +475,21 @@ public class MainActivity extends AppCompatActivity
                 });
             }
         };
-
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+        //endregion
 
+        pathPoints = new ArrayList<>();
+        pathPointsAccuracy = new ArrayList<>();
+
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(AppIndex.API).build();
+
+        //Starting GPS and Accelerometer Services
+        createLocationRequest();
         startSensors();
     }
 
