@@ -1,6 +1,7 @@
 package com.trekken;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -48,7 +49,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, DialogInterface.OnCancelListener {
 
     private NavigationView navigationView;
     private View headerLayout;
@@ -59,7 +60,10 @@ public class MainActivity extends AppCompatActivity
     private SensorEventListener listenerAccelerometer;
     private double rootSquare;
     static final double threshold = 3.0; //TODO rimettere 1.5 a fine test
-    Handler pbHandler;
+    private ProgressBar pb;
+    private Handler pbHandler;
+    private Runnable r;
+    private Ringtone alarm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -211,7 +215,7 @@ public class MainActivity extends AppCompatActivity
         helpBuilder.setView(popupLayout);
         final AlertDialog helpDialog = helpBuilder.create();
 
-        final ProgressBar pb = (ProgressBar) popupLayout.findViewById(R.id.progressBarTimer);
+        pb = (ProgressBar) popupLayout.findViewById(R.id.progressBarTimer);
         AnimationSet anSet = new AnimationSet(true);
 
         //Rotate 90 degrees
@@ -231,46 +235,61 @@ public class MainActivity extends AppCompatActivity
 
         //Setting up the alarm sound
         Uri uriAlarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        final Ringtone alarm = RingtoneManager.getRingtone(getApplicationContext(), uriAlarm);
+        alarm = RingtoneManager.getRingtone(getApplicationContext(), uriAlarm);
 
-        Button btnDismiss = (Button) popupLayout.findViewById(R.id.btnDismissPopup);
-        btnDismiss.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alarm.stop();
-                startSensors();
-                helpDialog.dismiss();
-            }
-        });
-
+        helpBuilder.setOnCancelListener(this);
         helpDialog.show();
         alarm.play();
 
         // Handler functioning as a Timer with tick = 1s
         // Decrease the value of the ProgressBar until stopped by Button or it will send an Emergency Sms
         pbHandler = new Handler();
-        final Runnable r = new Runnable() {
+        r = new Runnable() {
             public void run() {
-                if (pb.getProgress() > 1)
+                if (pb.getProgress() > 1) {
                     pb.setProgress(pb.getProgress() - 1);
+                    pbHandler.postDelayed(this, 500);
+                }
                 else {
+                    pb.setProgress(45);
                     sendEmergencySMS();
                     alarm.stop();
                     startSensors();
                     helpDialog.dismiss();
+                    pbHandler.removeCallbacks(this);
                 }
-                pbHandler.postDelayed(this, 1000);
             }
         };
-        pbHandler.postDelayed(r, 1000);
+        pbHandler.removeCallbacks(r);
+        pbHandler.postDelayed(r, 500);
+
+        Button btnDismiss = (Button) popupLayout.findViewById(R.id.btnDismissPopup);
+        btnDismiss.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pbHandler.removeCallbacks(r);
+                alarm.stop();
+                startSensors();
+                helpDialog.dismiss();
+            }
+        });
     }
 
+    //Called in case user or Android cancel the AlertDialog
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        pbHandler.removeCallbacks(r);
+        pb.setProgress(45);
+        alarm.stop();
+        startSensors();
+        dialog.dismiss();
+    }
     private void sendEmergencySMS() {
         //Log.i("Send SMS", "");
         String phoneNo = defaultPref.getString("emergency_number", "banana");
         String user = defaultPref.getString("display_name", "banana");
 
-        String message = "Trekken user " + user + " might be in danger while hiking and has request your aid!";
+        String message = "Trekken user " + user + " might be in danger while hiking and has requested your aid!";
 
         try {
             SmsManager smsManager = SmsManager.getDefault();
