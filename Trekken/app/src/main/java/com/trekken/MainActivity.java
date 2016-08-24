@@ -263,10 +263,12 @@ public class MainActivity extends AppCompatActivity
         pbHandler.removeCallbacks(r);
         pbHandler.postDelayed(r, 500);
 
+        //User stops the Alarm
         Button btnDismiss = (Button) popupLayout.findViewById(R.id.btnDismissPopup);
         btnDismiss.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Reset the AlertDialog and its elements
                 pbHandler.removeCallbacks(r);
                 alarm.stop();
                 startSensors();
@@ -278,6 +280,7 @@ public class MainActivity extends AppCompatActivity
     //Called in case user or Android cancel the AlertDialog
     @Override
     public void onCancel(DialogInterface dialog) {
+        //Reset the AlertDialog and its elements
         pbHandler.removeCallbacks(r);
         pb.setProgress(45);
         alarm.stop();
