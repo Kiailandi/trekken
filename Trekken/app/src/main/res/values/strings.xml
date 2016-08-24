@@ -37,12 +37,24 @@
     <string name="pref_default_display_name">Mario Rossi</string>
 
     <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
-    <string-array name="pref_example_list_titles">
+    <string-array name="friend_list_titles">
         <item>Always</item>
         <item>When possible</item>
         <item>Never</item>
     </string-array>
-    <string-array name="pref_example_list_values">
+    <string-array name="friend_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <string name="pref_title_change_color">Change app main colors</string>
+    <string-array name="color_list_titles">
+        <item>Green</item>
+        <item>Blue</item>
+        <item>Red</item>
+    </string-array>
+    <string-array name="color_list_values">
         <item>1</item>
         <item>0</item>
         <item>-1</item>
