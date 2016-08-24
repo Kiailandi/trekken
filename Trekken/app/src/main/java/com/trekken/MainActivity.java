@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity
 
         //Caricamento Dysplay Name
         defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String dysplayName = defaultPref.getString("emergency_number", "banana");
+        String dysplayName = defaultPref.getString("display_name", "banana");
 
         //Caricamento immagine utente
         Resources res = getResources();
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity
 
         //Caricamento Dysplay Name
         defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String dysplayName = defaultPref.getString("emergency_number", "banana");
+        String dysplayName = defaultPref.getString("display_name", "banana");
 
         //Metto Dysplay Name utente da DefaultSharedPreferences
         TextView txtName = (TextView) headerLayout.findViewById(R.id.textViewName);
