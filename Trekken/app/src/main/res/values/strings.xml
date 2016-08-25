@@ -94,7 +94,7 @@
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="pref_default_emergency_number">3289529832</string>
     <string name="pref_title_emergency_number">Emergency Number</string>
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false"> AIzaSyAjHK2bTs5zEWA52m9NoSaG0zGwQHD2BF4 </string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false"> AIzaSyAQUHYAaFgQGH6Gq4RHg2O2fMqDxrEIj4U </string>
 
     <string name="launch_title">Trekken</string>
     <string name="sign_in">Lets Go</string>
