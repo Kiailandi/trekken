@@ -1,6 +1,5 @@
 package com.trekken;
 
-import android.*;
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -571,11 +570,20 @@ public class MainActivity extends AppCompatActivity
         pb.startAnimation(anSet);
 
         //Setting up the alarm sound
-        Uri uriAlarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        Uri uriAlarm;
+        defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String alarmRingtone = defaultPref.getString("notifications_alarm_ringtone", "notFound");
+        if (!alarmRingtone.equals("notFound")) {
+            uriAlarm = Uri.parse(alarmRingtone);
+        } else {
+            uriAlarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        }
         alarm = RingtoneManager.getRingtone(getApplicationContext(), uriAlarm);
 
-        helpBuilder.setOnCancelListener(this);
+        helpDialog.setCancelable(false);
+        helpDialog.setOnCancelListener(this); //Just in case
         helpDialog.show();
+
         alarm.play();
 
         // Handler functioning as a Timer with tick = 1s
@@ -619,10 +627,8 @@ public class MainActivity extends AppCompatActivity
     public void onCancel(DialogInterface dialog) {
         //Reset the AlertDialog and its elements
         pbHandler.removeCallbacks(r);
-        pb.setProgress(45);
         alarm.stop();
         startSensors();
-        dialog.dismiss();
     }
     private void sendEmergencySMS() {
         //Log.i("Send SMS", "");
