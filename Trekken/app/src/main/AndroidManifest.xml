@@ -44,12 +44,8 @@
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity" />
-
-        <activity
-            android:name=".SignInActivity"/>
-
-        <activity
-            android:name=".WelcomeActivity"/>
+        <activity android:name=".SignInActivity" />
+        <activity android:name=".WelcomeActivity" />
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
@@ -62,7 +58,13 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity android:name=".FileBrowserActivity"></activity>
+        <activity android:name=".FileBrowserActivity" />
+        <activity
+            android:name=".FallDetection"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Dialog" />
     </application>
 
 </manifest> <!-- TODO Aggiungere permessi adeguati -->

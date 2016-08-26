@@ -296,6 +296,7 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        //File Browser
         if (resultCode == -1) {
             _pathLoad = data.getStringExtra("GetPath") + "/" + data.getStringExtra("GetFileName");
 //            Toast.makeText(this, data.getStringExtra("GetPath") + "/" + data.getStringExtra("GetFileName"),
@@ -304,10 +305,13 @@ public class MainActivity extends AppCompatActivity
             ArrayList<LatLng> loadedPathPoint = readFromFile();
             PolylineOptions options = new PolylineOptions().width(lineWidth).color(Color.RED).geodesic(true).addAll(loadedPathPoint);
             line = gMap.addPolyline(options);
-        } else {
-            Toast.makeText(this, "Nessun file selezionato",
-                    Toast.LENGTH_LONG).show();
         }
+        // Fall Detection
+        else if (requestCode == 2) {
+            startSensors();
+        } else
+            Toast.makeText(this, "Nessun file selezionato", Toast.LENGTH_LONG).show();
+
     }
 
     @Override
@@ -408,7 +412,9 @@ public class MainActivity extends AppCompatActivity
                     if (rootSquare < threshold) // threshold detecting free fall of the phone, lower is more precise
                     {
                         stopSensors();
-                        fallDetected();
+                        // fallDetected();
+                        Intent i = new Intent(MainActivity.this, FallDetection.class);
+                        startActivityForResult(i, 2);
                     }
                 }
             }
@@ -580,6 +586,7 @@ public class MainActivity extends AppCompatActivity
         }
         alarm = RingtoneManager.getRingtone(getApplicationContext(), uriAlarm);
 
+        //Launching the Popup Dialog
         helpDialog.setCancelable(false);
         helpDialog.setOnCancelListener(this); //Just in case
         helpDialog.show();
