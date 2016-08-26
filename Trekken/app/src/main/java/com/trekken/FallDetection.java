@@ -144,10 +144,16 @@ public class FallDetection extends Activity {
 
     private void sendEmergencySMS() {
         //Log.i("Send SMS", "");
+        Intent mainIntent = getIntent();
+        double lat = mainIntent.getDoubleExtra("latitude", 0.0);
+        double lon = mainIntent.getDoubleExtra("longitude", 0.0);
+
         String phoneNo = defaultPref.getString("emergency_number", "banana");
         String user = defaultPref.getString("display_name", "banana");
 
         String message = "Trekken user " + user + " might be in danger while hiking and has requested your aid!";
+        if (lat != 0.0)
+            message += "\n Latitude: " + Double.toString(lat) + "\n Longitude: " + Double.toString(lon);
 
         try {
             SmsManager smsManager = SmsManager.getDefault();

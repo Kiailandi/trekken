@@ -399,6 +399,10 @@ public class MainActivity extends AppCompatActivity
                         stopSensors();
                         // fallDetected();
                         Intent i = new Intent(MainActivity.this, FallDetection.class);
+                        if (mCurrentLocation != null) {
+                            i.putExtra("latitude", mCurrentLocation.getLatitude());
+                            i.putExtra("longitude", mCurrentLocation.getLongitude());
+                        }
                         startActivityForResult(i, 2);
                     }
                 }
