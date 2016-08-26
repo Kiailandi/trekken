@@ -33,7 +33,6 @@ public class FallDetection extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.popup_timer);
 
-        //TODO farlo funzionare anche a cell bloccato e replace helpdialog con finish
         //Toast.makeText(this, "Fall detected", Toast.LENGTH_SHORT).show();
 
         //AlertDialog setup, inflating his view and finding ProgressBar and Button

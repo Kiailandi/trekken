@@ -47,4 +47,4 @@
             android:checked="true"
             android:text="Sensori " />
     </LinearLayout>
-</LinearLayout><!--TODO misura dell immagine fissa!!-->
+</LinearLayout>
