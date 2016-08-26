@@ -84,7 +84,7 @@
     <string name="pref_title_system_sync_settings">Power Usage</string>
 
     <!-- Example settings for Notifications -->
-    <string name="pref_header_notifications">Notifications</string>
+    <string name="pref_header_notifications">Sound &amp; Notifications</string>
 
     <string name="pref_title_new_message_notifications">App notifications</string>
 
@@ -113,4 +113,5 @@
     <string name="user_profile_header">User profile:</string>
     <string name="profile_picture_content_desc">Profile picture</string>
     <string name="default_theme">Default theme</string>
+    <string name="fall_detected">Fall Detected!</string>
 </resources>

@@ -61,10 +61,11 @@
         <activity android:name=".FileBrowserActivity" />
         <activity
             android:name=".FallDetection"
+            android:label="@string/fall_detected"
             android:launchMode="singleInstance"
             android:excludeFromRecents="true"
             android:taskAffinity=""
             android:theme="@android:style/Theme.Dialog" />
     </application>
 
-</manifest> <!-- TODO Aggiungere permessi adeguati -->
+</manifest>

@@ -467,10 +467,19 @@ public class MainActivity extends AppCompatActivity
                 swCompat.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (swCompat.isChecked())
-                            startSensors();
-                        else
+                        if (swCompat.isChecked()) {
+                            if (defaultPref.getBoolean("fall_detection", true))
+                                startSensors();
+                            writeLogsAndroid(" \nonResume .........");
+                            googleApiClient.connect();
+                        } else {
                             stopSensors();
+                            if (googleApiClient.isConnected()) {
+                                LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, MainActivity.this);
+                                googleApiClient.disconnect();
+                                writeLogsAndroid(" \nonPause Location update stopped .........");
+                            }
+                        }
 
                     }
                 });
@@ -491,7 +500,8 @@ public class MainActivity extends AppCompatActivity
 
         //Starting GPS and Accelerometer Services
         createLocationRequest();
-        startSensors();
+        if (defaultPref.getBoolean("fall_detection", true))
+            startSensors();
     }
 
     @Override
@@ -521,7 +531,6 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         writeLogsAndroid(" \nonResume .........");
-
         googleApiClient.connect();
     }
 
@@ -539,12 +548,10 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
+        if (id == R.id.nav_paths) {
+            //TODO stampare i percorsi di utente
         } else if (id == R.id.nav_gallery) {
             Toast.makeText(this, "gallery pressed", Toast.LENGTH_SHORT).show();
-
-        } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
             Intent intent = new Intent(this, SettingsActivity.class);
