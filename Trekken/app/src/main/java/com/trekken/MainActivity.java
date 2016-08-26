@@ -1,6 +1,5 @@
 package com.trekken;
 
-import android.*;
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
