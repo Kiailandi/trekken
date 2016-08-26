@@ -83,6 +83,16 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -117,6 +127,9 @@ public class MainActivity extends AppCompatActivity
     //Check invertire
     static final long time_interval = 1000 * 5;      //Millisecondi
     static final long fastest_time_interval = 1000 * 3;    //Millisecondi
+
+    private FirebaseAuth mAuth;
+    private DatabaseReference mRef;
 
     String mLastUpdateTime;
     GoogleMap gMap = null;
@@ -312,6 +325,21 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mRef = FirebaseDatabase.getInstance().getReference();
+
+        mRef.child("paths").addValueEventListener(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.d("pathtest", dataSnapshot.getValue().toString());
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
 
         //Checking the presence of googlePlayServices
         if (!isGooglePlayServicesAvailable()) {
