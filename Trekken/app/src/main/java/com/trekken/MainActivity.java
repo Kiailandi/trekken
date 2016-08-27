@@ -13,9 +13,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.Ringtone;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -140,8 +138,7 @@ public class MainActivity extends AppCompatActivity
     File filepath;
     FileWriter writer;
 
-    int waitToStart = 0;
-
+    int waitToStart = 0, trackColor;
     String _pathLoad;
 
     private ArrayList<LatLng> readFromFile() {
@@ -277,7 +274,7 @@ public class MainActivity extends AppCompatActivity
                 pathPoints.add(currentPosition);
                 pathPointsAccuracy.add(mCurrentLocation.getAccuracy());
 
-                PolylineOptions options = new PolylineOptions().width(lineWidth).color(Color.RED).geodesic(true).addAll(pathPoints);
+                PolylineOptions options = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pathPoints);
                 line = gMap.addPolyline(options);
             } else {
                 txtLog.append(" \nLocation is null .........");
@@ -302,7 +299,7 @@ public class MainActivity extends AppCompatActivity
 //                    Toast.LENGTH_LONG).show();
 
             ArrayList<LatLng> loadedPathPoint = readFromFile();
-            PolylineOptions options = new PolylineOptions().width(lineWidth).color(Color.RED).geodesic(true).addAll(loadedPathPoint);
+            PolylineOptions options = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(loadedPathPoint);
             line = gMap.addPolyline(options);
         }
         // Fall Detection
@@ -451,6 +448,7 @@ public class MainActivity extends AppCompatActivity
         final String emailPreferences = sharedPref.getString("email", "rospo");
 
         //Caricamento Dysplay Name
+        defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
         String dysplayName = defaultPref.getString("display_name", "banana");
 
         //Caricamento immagine utente
@@ -520,6 +518,16 @@ public class MainActivity extends AppCompatActivity
 
         pathPoints = new ArrayList<>();
         pathPointsAccuracy = new ArrayList<>();
+
+        String color = defaultPref.getString("color_list", "-1");
+        switch (color) {
+            case "1":
+                trackColor = ContextCompat.getColor(this, R.color.colorPrimary); //Green
+            case "0":
+                trackColor = ContextCompat.getColor(this, R.color.colorPrimary3); //Blue
+            default:
+                trackColor = ContextCompat.getColor(this, R.color.colorPrimary2); //Red
+        }
 
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
