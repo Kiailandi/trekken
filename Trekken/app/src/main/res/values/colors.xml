@@ -11,4 +11,6 @@
     <color name="colorPrimaryDark3">#0099CC</color>
 
     <color name="material_red_a200">#FF5252</color>
+
+    <color name="yellow">#FFFF00</color>
 </resources>
