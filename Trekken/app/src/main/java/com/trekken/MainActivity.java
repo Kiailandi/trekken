@@ -208,14 +208,18 @@ public class MainActivity extends AppCompatActivity
         }
 
         filepath = new File(root, "Maps_Gps_LatLon" + ".txt");  // file path to save
-
+        mRef = FirebaseDatabase.getInstance().getReference();
         try {
             writer = new FileWriter(filepath);
-
+            String key = mRef.child("paths").push().getKey();
+            mRef.child("paths/" + key + "/creator").setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
             if (pathPoints.size() > 0 && pathPoints != null) {
-                for (int i = 0; i < pathPoints.size(); i++)
+                for (int i = 0; i < pathPoints.size(); i++) {
+                    mRef.child("paths/" + key + "/points/" + i + "/latitude").setValue(pathPoints.get(i).latitude);
+                    mRef.child("paths/" + key + "/points/" + i + "/longitude").setValue(pathPoints.get(i).longitude);
+                    mRef.child("paths/" + key + "/points/" + i + "/precision").setValue(pathPointsAccuracy.get(i));
                     writer.append((i + 1) + ";" + pathPoints.get(i).latitude + ";" + pathPoints.get(i).longitude + ";" + pathPointsAccuracy.get(i) + "\r\n");
-
+                }
                 writer.flush();
                 Toast.makeText(getApplicationContext(), filepath.getName() + " creato! " + pathPoints.size() + " records", Toast.LENGTH_LONG).show();
             }
