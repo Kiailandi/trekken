@@ -51,7 +51,7 @@ public class SignInActivity extends AppCompatActivity {
             finish();
         }
 
-        setContentView(R.layout.sign_in_layout);
+        setContentView(R.layout.signed_in_layout);
         ButterKnife.bind(this);
     }
 
@@ -60,6 +60,7 @@ public class SignInActivity extends AppCompatActivity {
         startActivityForResult(
                 AuthUI.getInstance().createSignInIntentBuilder()
                         /*DEBUG*/
+                        .setLogo(AuthUI.NO_LOGO)
                         .setIsSmartLockEnabled(false)
                         .setTheme(AuthUI.getDefaultTheme())
                         .setProviders(getSelectedProviders())
