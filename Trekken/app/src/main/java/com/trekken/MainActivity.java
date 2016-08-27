@@ -326,6 +326,26 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Checking the presence of googlePlayServices
+        if (!isGooglePlayServicesAvailable()) {
+            finish(); // drastic!
+        }
+
+        //Setup design elements
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+                startActivity(intent);
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+
         mRef = FirebaseDatabase.getInstance().getReference();
 
         mRef.child("paths").addValueEventListener(
@@ -340,25 +360,6 @@ public class MainActivity extends AppCompatActivity
 
                     }
                 });
-
-        //Checking the presence of googlePlayServices
-        if (!isGooglePlayServicesAvailable()) {
-            finish(); // drastic!
-        }
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, SignInActivity.class);
-                startActivity(intent);
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         //region Button Listeners Setup
         final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -450,7 +451,6 @@ public class MainActivity extends AppCompatActivity
         final String emailPreferences = sharedPref.getString("email", "rospo");
 
         //Caricamento Dysplay Name
-        defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
         String dysplayName = defaultPref.getString("display_name", "banana");
 
         //Caricamento immagine utente

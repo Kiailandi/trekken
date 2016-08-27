@@ -48,7 +48,7 @@
         <item>-1</item>
     </string-array>
 
-    <string name="pref_title_change_color">Change app main colors</string>
+    <string name="pref_title_change_color">Change tracks color</string>
     <string-array name="color_list_titles">
         <item>Green</item>
         <item>Blue</item>

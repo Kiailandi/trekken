@@ -140,7 +140,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
 /*        if ( key.equals("color_list")) {
 
         }*/
-        //TODO finish color change
+        //TODO finish color change, magari per colore tracciato
     }
 
 
