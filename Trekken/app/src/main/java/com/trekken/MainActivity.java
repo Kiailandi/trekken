@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -13,43 +14,36 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.SwitchCompat;
-import android.util.Log;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.content.ActivityNotFoundException;
-import android.content.IntentSender;
-import android.graphics.Color;
-import android.location.Location;
-import android.location.LocationManager;
-import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
-import android.widget.EditText;
 
-import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -66,30 +60,24 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,
@@ -138,7 +126,7 @@ public class MainActivity extends AppCompatActivity
     File filepath;
     FileWriter writer;
 
-    int waitToStart = 0, trackColor;
+    int waitToStart = 1, trackColor;
     String _pathLoad;
 
     private ArrayList<LatLng> readFromFile() {
@@ -275,8 +263,22 @@ public class MainActivity extends AppCompatActivity
                     afterOnConnected = false;
                 }
 
-                pathPoints.add(currentPosition);
-                pathPointsAccuracy.add(mCurrentLocation.getAccuracy());
+                DecimalFormat df = new DecimalFormat("#.#####");
+                df.setRoundingMode(RoundingMode.CEILING);
+
+                if(pathPoints.size() >= 1 && !(df.format(pathPoints.get(pathPoints.size() - 1).latitude).equals(df.format(mCurrentLocation.getLatitude())) && df.format(pathPoints.get(pathPoints.size() - 1).longitude).equals(df.format(mCurrentLocation.getLongitude())))) {
+                    pathPoints.add(currentPosition);
+                    pathPointsAccuracy.add(mCurrentLocation.getAccuracy());
+                }
+                else if(pathPoints.size() < 1){
+                    pathPoints.add(currentPosition);
+                    pathPointsAccuracy.add(mCurrentLocation.getAccuracy());
+                }
+
+                Log.d("Coordinate", "Size: " + pathPoints.size());
+                for(int i = 0; i < pathPoints.size(); i++){
+                    Log.d("Coordinate", pathPoints.get(i).latitude + " " + pathPoints.get(i).longitude);
+                }
 
                 PolylineOptions options = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pathPoints);
                 line = gMap.addPolyline(options);
