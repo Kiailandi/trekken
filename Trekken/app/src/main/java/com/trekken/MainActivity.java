@@ -80,6 +80,7 @@ import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -113,8 +114,9 @@ public class MainActivity extends AppCompatActivity
     Button btnStop;
     Button btnLoad;
 
-    ArrayList<LatLng> pathPoints;
+    ArrayList<LatLng> pathPoints, pointsFromDb;
     Polyline line;
+    PolylineOptions options2;
     ArrayList<Float> pathPointsAccuracy;
 
     GoogleApiClient googleApiClient;
@@ -347,21 +349,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        mRef = FirebaseDatabase.getInstance().getReference();
-
-        mRef.child("paths").addValueEventListener(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.d("pathtest", dataSnapshot.getValue().toString());
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
         //region Button Listeners Setup
         final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -523,16 +510,6 @@ public class MainActivity extends AppCompatActivity
         pathPoints = new ArrayList<>();
         pathPointsAccuracy = new ArrayList<>();
 
-        String color = defaultPref.getString("color_list", "-1");
-        switch (color) {
-            case "1":
-                trackColor = ContextCompat.getColor(this, R.color.colorPrimary); //Green
-            case "0":
-                trackColor = ContextCompat.getColor(this, R.color.colorPrimary3); //Blue
-            default:
-                trackColor = ContextCompat.getColor(this, R.color.colorPrimary2); //Red
-        }
-
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
@@ -556,6 +533,19 @@ public class MainActivity extends AppCompatActivity
         //Metto Dysplay Name utente da DefaultSharedPreferences
         TextView txtName = (TextView) headerLayout.findViewById(R.id.textViewName);
         txtName.setText(dysplayName);
+
+        String color = defaultPref.getString("color_list", "-1");
+        switch (color) {
+            case "1":
+                trackColor = ContextCompat.getColor(this, R.color.colorPrimary);
+                break; //Green
+            case "0":
+                trackColor = ContextCompat.getColor(this, R.color.colorPrimary3);
+                break; //Blue
+            default:
+                trackColor = ContextCompat.getColor(this, R.color.colorPrimary2);
+                break; //Red
+        }
     }
 
     @Override
@@ -590,7 +580,30 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_paths) {
-            //TODO stampare i percorsi di utente
+            mRef = FirebaseDatabase.getInstance().getReference(); //TODO inizializzarlo all inizio
+            pointsFromDb = new ArrayList<>();
+            mRef.child("paths/").addValueEventListener(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Iterator<DataSnapshot> dataIterator = dataSnapshot.getChildren().iterator();
+                            for (DataSnapshot item : dataIterator.next().child("points").getChildren()) {
+                                pointsFromDb.add(new LatLng(Double.parseDouble(item.child("latitude").getValue().toString()), Double.parseDouble(item.child("longitude").getValue().toString())));
+                            }
+
+                            gMap.clear();
+
+                            options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
+                            line = gMap.addPolyline(options2);
+                            pointsFromDb.clear();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
         } else if (id == R.id.nav_gallery) {
             Toast.makeText(this, "gallery pressed", Toast.LENGTH_SHORT).show();
 
