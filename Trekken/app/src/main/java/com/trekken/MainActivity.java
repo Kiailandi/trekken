@@ -74,6 +74,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -630,18 +631,24 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         pointsFromDb = new ArrayList<>();
         DataSnapshot tmp;
+        ArrayList<String> nearpaths = new ArrayList<String>();
         if (id == R.id.nav_paths) {
             for (DataSnapshot path : paths.getChildren()) {
                 tmp = path.child("points").child("0");
-                //aggiungi ogni primo punto di ogni percorso
-                pointsFromDb.add(new LatLng(Double.parseDouble(tmp.child("latitude").getValue().toString()), Double.parseDouble(tmp.child("longitude").getValue().toString())));
+                if(isInRadius(new LatLng(Double.parseDouble(tmp.child("latitude").getValue().toString()), Double.parseDouble(tmp.child("longitude").getValue().toString())))){
+                    nearpaths.add(path.getKey().toString());                }
             }
 
             gMap.clear();
-
-            options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
-            line = gMap.addPolyline(options2);
-            pointsFromDb.clear();
+            for(String key : nearpaths) {
+                for(DataSnapshot point : paths.child(key).child("points").getChildren()){
+                    pointsFromDb.add(new LatLng(Double.parseDouble(point.child("latitude").getValue().toString()), Double.parseDouble(point.child("longitude").getValue().toString())));
+                    //disegna percorso qui
+                    //options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
+                    //line = gMap.addPolyline(options2);
+                }
+                pointsFromDb.clear();
+            }
 
         } else if (id == R.id.nav_gallery) {
             Toast.makeText(this, "gallery pressed", Toast.LENGTH_SHORT).show();
