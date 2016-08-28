@@ -134,6 +134,8 @@ public class MainActivity extends AppCompatActivity
     int waitToStart = 1, trackColor;
     String _pathLoad;
 
+    final double radius = 1.24274;
+
     private ArrayList<LatLng> readFromFile() {
         ArrayList<LatLng> ret = null;
         BufferedReader inputStream = null;
@@ -162,6 +164,25 @@ public class MainActivity extends AppCompatActivity
         }
 
         return ret;
+    }
+
+    protected boolean isInRadius(LatLng pos){
+//        a = Math.Acos(Math.Sin(LatFromDb * 0.0175) * Math.Sin(LatCurrentPos * 0.0175)
+//                + Math.Cos(LatFromDb * 0.0175) * Math.Cos(LatCurrentPos * 0.0175)
+//                * Math.Cos((LonCurrentPos * 0.0175) - (LonFromDb * 0.0175))) * 3959;
+//
+//        a <= 1.24274 (2Km)
+
+        double latFromDb = pos.latitude;
+        double lonFromDb = pos.longitude;
+        double latCurrentPos = mCurrentLocation.getLatitude();
+        double lonCurrentPos = mCurrentLocation.getLongitude();
+
+        double tmp = Math.acos(Math.sin(latFromDb * 0.0175) * Math.sin(latCurrentPos * 0.0175)
+                        + Math.cos(latFromDb * 0.0175) * Math.cos(latCurrentPos * 0.0175)
+                        * Math.cos((lonCurrentPos * 0.0175) - (lonFromDb * 0.0175))) * 3959;
+
+        return tmp <= radius;
     }
 
     protected void writeLogsAndroid(String msg) {
