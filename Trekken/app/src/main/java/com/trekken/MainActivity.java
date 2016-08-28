@@ -230,6 +230,7 @@ public class MainActivity extends AppCompatActivity
                 .setFastestInterval(fastest_time_interval);
     }
 
+
     private boolean isGooglePlayServicesAvailable() {
         GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
         int result = googleAPI.isGooglePlayServicesAvailable(this);
