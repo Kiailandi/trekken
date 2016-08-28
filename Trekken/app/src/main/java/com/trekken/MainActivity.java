@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity
     Button btnStart;
     Button btnStop;
     Button btnLoad;
+    Button btnNear;
 
     ArrayList<LatLng> pathPoints, pointsFromDb;
     Polyline line;
@@ -318,6 +319,28 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    protected void lookForNearPaths(){
+        //mRef = FirebaseDatabase.getInstance().getReference(); //TODO inizializzarlo all inizio
+        pointsFromDb = new ArrayList<>();
+
+        mRef.child("paths/").addValueEventListener(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot item : dataSnapshot.getChildren()) {
+                            pointsFromDb.add(new LatLng(Double.parseDouble(item.child("latitude").getValue().toString()), Double.parseDouble(item.child("longitude").getValue().toString())));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+    }
+
+
     @Override
     public void onMapReady(GoogleMap map) {
         txtLog.append(" \nonMapReady initiated .........");
@@ -397,6 +420,15 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        btnNear = (Button)findViewById(R.id.btnNear);
+
+        btnNear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                lookForNearPaths();
+            }
+        });
+
         txtLog.setTextIsSelectable(true);
         txtLog.setText("Map_v2 onCreate " + DateFormat.getTimeInstance().format(new Date()) + " .........");
         //endregion
@@ -440,7 +472,7 @@ public class MainActivity extends AppCompatActivity
         sharedPref = this.getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
         final String emailPreferences = sharedPref.getString("email", "rospo");
 
-        //Caricamento Dysplay Name
+        //Caricamento Display Name
         defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
         String dysplayName = defaultPref.getString("display_name", "banana");
 
@@ -459,7 +491,7 @@ public class MainActivity extends AppCompatActivity
         TextView txtEmail = (TextView) headerLayout.findViewById(R.id.textView);
         txtEmail.setText(emailPreferences);
 
-        //Metto Dysplay Name utente da DefaultSharedPreferences
+        //Metto Display Name utente da DefaultSharedPreferences
         TextView txtName = (TextView) headerLayout.findViewById(R.id.textViewName);
         txtName.setText(dysplayName);
 
@@ -522,17 +554,21 @@ public class MainActivity extends AppCompatActivity
         createLocationRequest();
         if (defaultPref.getBoolean("fall_detection", true))
             startSensors();
+
+        mRef = FirebaseDatabase.getInstance().getReference();
+
+        lookForNearPaths();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        //Caricamento Dysplay Name
+        //Caricamento Display Name
         defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
         String dysplayName = defaultPref.getString("display_name", "banana");
 
-        //Metto Dysplay Name utente da DefaultSharedPreferences
+        //Metto Display Name utente da DefaultSharedPreferences
         TextView txtName = (TextView) headerLayout.findViewById(R.id.textViewName);
         txtName.setText(dysplayName);
 

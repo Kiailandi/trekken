@@ -73,9 +73,17 @@
         android:layout_height="wrap_content"
         android:text="Carica Log"
         android:id="@+id/btnLoad"
-        android:layout_marginEnd="29dp"
         android:layout_below="@+id/txtLog"
         android:layout_toStartOf="@+id/btnStop" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Near"
+        android:id="@+id/btnNear"
+        android:layout_alignTop="@+id/btnLog"
+        android:layout_toStartOf="@+id/btnLog" />
 
 
 </RelativeLayout>
