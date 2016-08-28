@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity
     private SensorEventListener listenerAccelerometer;
     private double rootSquare;
     static final double threshold = 3.0; //TODO rimettere 1.5 a fine test
+    private DataSnapshot paths;
 
     EditText txtLog;
     Button btnLog;
@@ -332,6 +333,20 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mRef = FirebaseDatabase.getInstance().getReference(); //TODO inizializzarlo all inizio
+
+        mRef.child("paths/").addValueEventListener(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        paths = dataSnapshot;
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
 
         //Checking the presence of googlePlayServices
         if (!isGooglePlayServicesAvailable()) {
@@ -591,31 +606,18 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
+        pointsFromDb = new ArrayList<>();
         if (id == R.id.nav_paths) {
-            mRef = FirebaseDatabase.getInstance().getReference(); //TODO inizializzarlo all inizio
-            pointsFromDb = new ArrayList<>();
-            mRef.child("paths/").addValueEventListener(
-                    new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Iterator<DataSnapshot> dataIterator = dataSnapshot.getChildren().iterator();
-                            for (DataSnapshot item : dataIterator.next().child("points").getChildren()) {
-                                pointsFromDb.add(new LatLng(Double.parseDouble(item.child("latitude").getValue().toString()), Double.parseDouble(item.child("longitude").getValue().toString())));
-                            }
+            Iterator<DataSnapshot> dataIterator = paths.getChildren().iterator();
+            for (DataSnapshot tmp : dataIterator.next().child("points").getChildren()) {
+                pointsFromDb.add(new LatLng(Double.parseDouble(tmp.child("latitude").getValue().toString()), Double.parseDouble(tmp.child("longitude").getValue().toString())));
+            }
 
-                            gMap.clear();
+            gMap.clear();
 
-                            options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
-                            line = gMap.addPolyline(options2);
-                            pointsFromDb.clear();
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
+            options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
+            line = gMap.addPolyline(options2);
+            pointsFromDb.clear();
 
         } else if (id == R.id.nav_gallery) {
             Toast.makeText(this, "gallery pressed", Toast.LENGTH_SHORT).show();
