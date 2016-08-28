@@ -319,28 +319,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    protected void lookForNearPaths(){
-        //mRef = FirebaseDatabase.getInstance().getReference(); //TODO inizializzarlo all inizio
-        pointsFromDb = new ArrayList<>();
-
-        mRef.child("paths/").addValueEventListener(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot item : dataSnapshot.getChildren()) {
-                            pointsFromDb.add(new LatLng(Double.parseDouble(item.child("latitude").getValue().toString()), Double.parseDouble(item.child("longitude").getValue().toString())));
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-    }
-
-
     @Override
     public void onMapReady(GoogleMap map) {
         txtLog.append(" \nonMapReady initiated .........");
@@ -425,7 +403,7 @@ public class MainActivity extends AppCompatActivity
         btnNear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                lookForNearPaths();
+                //lookForNearPaths();
             }
         });
 
@@ -554,10 +532,6 @@ public class MainActivity extends AppCompatActivity
         createLocationRequest();
         if (defaultPref.getBoolean("fall_detection", true))
             startSensors();
-
-        mRef = FirebaseDatabase.getInstance().getReference();
-
-        lookForNearPaths();
     }
 
     @Override
