@@ -19,6 +19,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -607,9 +608,11 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         pointsFromDb = new ArrayList<>();
+        DataSnapshot tmp;
         if (id == R.id.nav_paths) {
-            Iterator<DataSnapshot> dataIterator = paths.getChildren().iterator();
-            for (DataSnapshot tmp : dataIterator.next().child("points").getChildren()) {
+            for (DataSnapshot path : paths.getChildren()) {
+                tmp = path.child("points").child("0");
+                //aggiungi ogni primo punto di ogni percorso
                 pointsFromDb.add(new LatLng(Double.parseDouble(tmp.child("latitude").getValue().toString()), Double.parseDouble(tmp.child("longitude").getValue().toString())));
             }
 
