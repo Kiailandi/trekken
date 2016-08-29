@@ -333,14 +333,14 @@ public class MainActivity extends AppCompatActivity
                 DecimalFormat df = new DecimalFormat("#.#####");
                 df.setRoundingMode(RoundingMode.CEILING);
 
-                if(pathPoints.size() >= 1 && !(df.format(pathPoints.get(pathPoints.size() - 1).latitude).equals(df.format(mCurrentLocation.getLatitude())) && df.format(pathPoints.get(pathPoints.size() - 1).longitude).equals(df.format(mCurrentLocation.getLongitude())))) {
+//                if(pathPoints.size() >= 1 && !(df.format(pathPoints.get(pathPoints.size() - 1).latitude).equals(df.format(mCurrentLocation.getLatitude())) && df.format(pathPoints.get(pathPoints.size() - 1).longitude).equals(df.format(mCurrentLocation.getLongitude())))) {
+//                    pathPoints.add(currentPosition);
+//                    pathPointsAccuracy.add(mCurrentLocation.getAccuracy());
+//                }
+//                else if(pathPoints.size() < 1){
                     pathPoints.add(currentPosition);
                     pathPointsAccuracy.add(mCurrentLocation.getAccuracy());
-                }
-                else if(pathPoints.size() < 1){
-                    pathPoints.add(currentPosition);
-                    pathPointsAccuracy.add(mCurrentLocation.getAccuracy());
-                }
+//                }
 
                 Log.d("Coordinate", "Size: " + pathPoints.size());
                 for(int i = 0; i < pathPoints.size(); i++){
@@ -395,7 +395,7 @@ public class MainActivity extends AppCompatActivity
             public boolean onMyLocationButtonClick() {
                 //CareTo mCurrentLocation != null
                 movedByUser = false;
-                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 14));
+                gMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
                 return true;
             }
         });
@@ -831,6 +831,7 @@ public class MainActivity extends AppCompatActivity
         if (i == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
             Log.d("LogsFunctions", "The user gestured on the map.");
             movedByUser = true;
+
         }
 //        else if (i == GoogleMap.OnCameraMoveStartedListener
 //                .REASON_API_ANIMATION) {
