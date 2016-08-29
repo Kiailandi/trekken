@@ -87,6 +87,11 @@ public class MainActivity extends AppCompatActivity
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
+//      Ex CaricaLog -> Chiama il FileBrowser
+//    Intent myIntent = new Intent(MainActivity.this, FileBrowserActivity.class);
+//    myIntent.putExtra("key", 15); //Optional parameters
+//    //MainActivity.this.startActivity(myIntent);
+//    startActivityForResult(myIntent, 100);
 
     private NavigationView navigationView;
     private View headerLayout;
@@ -445,10 +450,7 @@ public class MainActivity extends AppCompatActivity
         btnLoad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent myIntent = new Intent(MainActivity.this, FileBrowserActivity.class);
-                myIntent.putExtra("key", 15); //Optional parameters
-                //MainActivity.this.startActivity(myIntent);
-                startActivityForResult(myIntent, 100);
+
             }
         });
 
