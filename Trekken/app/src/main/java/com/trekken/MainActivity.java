@@ -200,6 +200,7 @@ public class MainActivity extends AppCompatActivity
             }
 
             pointsFromDb.clear();
+            i = 0;
         }
 
         nearpaths.clear();
