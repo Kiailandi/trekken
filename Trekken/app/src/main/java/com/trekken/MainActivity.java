@@ -662,23 +662,29 @@ public class MainActivity extends AppCompatActivity
 
         DataSnapshot tmp;
         if (id == R.id.nav_paths) {
-            for (DataSnapshot path : paths.getChildren()) {
-                tmp = path.child("points").child("0");
-                if(isInRadius(new LatLng(Double.parseDouble(tmp.child("latitude").getValue().toString()), Double.parseDouble(tmp.child("longitude").getValue().toString())))){
-                    nearpaths.add(path.getKey().toString());
-                }
-            }
+            mRef = FirebaseDatabase.getInstance().getReference();
+            pointsFromDb = new ArrayList<>();
+            mRef.child("paths/").addValueEventListener(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Iterator<DataSnapshot> dataIterator = dataSnapshot.getChildren().iterator();
+                            for (DataSnapshot item : dataIterator.next().child("points").getChildren()) {
+                                pointsFromDb.add(new LatLng(Double.parseDouble(item.child("latitude").getValue().toString()), Double.parseDouble(item.child("longitude").getValue().toString())));
+                            }
 
-            gMap.clear();
-            for(String key : nearpaths) {
-                for(DataSnapshot point : paths.child(key).child("points").getChildren()){
-                    pointsFromDb.add(new LatLng(Double.parseDouble(point.child("latitude").getValue().toString()), Double.parseDouble(point.child("longitude").getValue().toString())));
-                    //disegna percorso qui
-                    //options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
-                    //line = gMap.addPolyline(options2);
-                }
-                pointsFromDb.clear();
-            }
+                            gMap.clear();
+
+                            PolylineOptions options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
+                            line = gMap.addPolyline(options2);
+                            pointsFromDb.clear();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
 
         } else if (id == R.id.nav_gallery) {
             Toast.makeText(this, "gallery pressed", Toast.LENGTH_SHORT).show();
