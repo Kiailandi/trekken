@@ -19,7 +19,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -40,7 +39,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -74,7 +72,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -104,7 +101,6 @@ public class MainActivity extends AppCompatActivity
     static final double threshold = 1.0; //TODO rimettere 1.5 a fine test
     private DataSnapshot paths;
 
-    EditText txtLog;
     Button btnLog;
     Button btnStart;
     Button btnStop;
@@ -119,13 +115,13 @@ public class MainActivity extends AppCompatActivity
     GoogleApiClient googleApiClient;
     LocationRequest mLocationRequest;
     Location mCurrentLocation;
-    LocationSettingsRequest.Builder builder;
+    //LocationSettingsRequest.Builder builder;
 
     //Check invertire
     static final long time_interval = 1000 * 5;      //Millisecondi
     static final long fastest_time_interval = 1000 * 3;    //Millisecondi
 
-    private FirebaseAuth mAuth;
+    //private FirebaseAuth mAuth;
     private DatabaseReference mRef;
 
     String mLastUpdateTime;
@@ -137,7 +133,7 @@ public class MainActivity extends AppCompatActivity
     File filepath;
     FileWriter writer;
 
-    int waitToStart = 1, trackColor;
+    int waitToStart = 1, trackColor, trackColorNear;
     String _pathLoad;
 
     final double radius = 1.24274;
@@ -191,7 +187,7 @@ public class MainActivity extends AppCompatActivity
             for(DataSnapshot point : paths.child(key).child("points").getChildren()){
                 pointsFromDb.add(new LatLng(Double.parseDouble(point.child("latitude").getValue().toString()), Double.parseDouble(point.child("longitude").getValue().toString())));
                 //disegna percorso qui
-                PolylineOptions options = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
+                PolylineOptions options = new PolylineOptions().width(lineWidth).color(trackColorNear).geodesic(true).addAll(pointsFromDb);
                 line = gMap.addPolyline(options);
             }
 
@@ -218,11 +214,6 @@ public class MainActivity extends AppCompatActivity
                         * Math.cos((lonCurrentPos * 0.0175) - (lonFromDb * 0.0175))) * 3959;
 
         return tmp <= radius;
-    }
-
-    protected void writeLogsAndroid(String msg) {
-        txtLog.append(msg);
-        Log.d("MapActivity", msg);
     }
 
     protected boolean checkGpsEnabled() {
@@ -303,14 +294,14 @@ public class MainActivity extends AppCompatActivity
 
     protected void handleNewLocation(Location location) {
         if (waitToStart == 0) {
-            txtLog.append(" \nhandleNewLocation .........");
+            Log.e("LogsFunctions", " \nhandleNewLocation .........");
             mCurrentLocation = location;
 
             if (mCurrentLocation != null) {
                 double lat = mCurrentLocation.getLatitude();
                 double lng = mCurrentLocation.getLongitude();
 
-                txtLog.append(" \n\nAt Time: " + mLastUpdateTime + "\n" +
+                Log.d("LogsFunctions", " \n\nAt Time: " + mLastUpdateTime + "\n" +
                         "Latitude: " + lat + "\n" +
                         "Longitude: " + lng + "\n" +
                         "Accuracy: " + mCurrentLocation.getAccuracy() + "\n" +
@@ -345,14 +336,13 @@ public class MainActivity extends AppCompatActivity
                 PolylineOptions options = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pathPoints);
                 line = gMap.addPolyline(options);
             } else {
-                txtLog.append(" \nLocation is null .........");
+                Log.e("LogsFunctions", " \nLocation is null .........");
 
                 final LatLng besenello = new LatLng(45.940966, 11.1091463);
                 gMap.addMarker(new MarkerOptions().position(besenello).title("Marker a Besenello"));
                 gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(besenello, 14));
             }
 
-            txtLog.setSelection(txtLog.getText().length());
         } else
             waitToStart--;
     }
@@ -380,7 +370,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onMapReady(GoogleMap map) {
-        txtLog.append(" \nonMapReady initiated .........");
+        Log.e("LogsFunctions", " \nonMapReady initiated .........");
         gMap = map;
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             gMap.setMyLocationEnabled(true);
@@ -415,13 +405,12 @@ public class MainActivity extends AppCompatActivity
         final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        txtLog = (EditText) findViewById(R.id.txtLog);
         btnStart = (Button) findViewById(R.id.btnStart);
 
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                writeLogsAndroid("btnStart .........");
+                Log.e("LogsFunctions", "btnStart .........");
                 googleApiClient.connect();
             }
         });
@@ -431,7 +420,7 @@ public class MainActivity extends AppCompatActivity
         btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                writeLogsAndroid("btnStop .........");
+                Log.e("LogsFunctions", "btnStop .........");
                 googleApiClient.disconnect();
             }
         });
@@ -454,8 +443,16 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        txtLog.setTextIsSelectable(true);
-        txtLog.setText("Map_v2 onCreate " + DateFormat.getTimeInstance().format(new Date()) + " .........");
+        btnNear = (Button)findViewById(R.id.btnNear);
+
+        btnNear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                lookForNearPaths();
+            }
+        });
+
+        Log.e("LogsFunctions", "Map_v2 onCreate " + DateFormat.getTimeInstance().format(new Date()) + " .........");
         //endregion
 
         //region Accelerometer
@@ -547,14 +544,14 @@ public class MainActivity extends AppCompatActivity
                         if (swCompat.isChecked()) {
                             if (defaultPref.getBoolean("fall_detection", true))
                                 startSensors();
-                            writeLogsAndroid(" \nonResume .........");
+                            Log.e("LogsFunctions", " \nonResume .........");
                             googleApiClient.connect();
                         } else {
                             stopSensors();
                             if (googleApiClient.isConnected()) {
                                 LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, MainActivity.this);
                                 googleApiClient.disconnect();
-                                writeLogsAndroid(" \nonPause Location update stopped .........");
+                                Log.e("LogsFunctions", " \nonPause Location update stopped .........");
                             }
                         }
 
@@ -620,6 +617,7 @@ public class MainActivity extends AppCompatActivity
                 break; //Red
         }
 
+        trackColorNear = ContextCompat.getColor(this, R.color.yellow);
     }
 
     @Override
@@ -628,14 +626,14 @@ public class MainActivity extends AppCompatActivity
         if (googleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
             googleApiClient.disconnect();
-            writeLogsAndroid(" \nonPause Location update stopped .........");
+            Log.e("LogsFunctions", " \nonPause Location update stopped .........");
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        writeLogsAndroid(" \nonResume .........");
+        Log.e("LogsFunctions", " \nonResume .........");
         googleApiClient.connect();
     }
 
@@ -653,7 +651,8 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_my_paths) {
+        DataSnapshot tmp;
+        if (id == R.id.nav_paths) {
             mRef = FirebaseDatabase.getInstance().getReference();
             pointsFromDb = new ArrayList<>();
             mRef.child("paths/").addValueEventListener(
@@ -686,8 +685,8 @@ public class MainActivity extends AppCompatActivity
                         }
                     });
 
-        } else if (id == R.id.nav_near_paths) {
-            lookForNearPaths();
+        } else if (id == R.id.nav_gallery) {
+            Toast.makeText(this, "gallery pressed", Toast.LENGTH_SHORT).show();
 
         } else if (id == R.id.nav_manage) {
             Intent intent = new Intent(this, SettingsActivity.class);
@@ -753,7 +752,7 @@ public class MainActivity extends AppCompatActivity
     //GoogleApiClient.ConnectionCallbacks provides call back for GoogleApiClient onConnected.
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        writeLogsAndroid(" \nonConnected - isConnected : " + googleApiClient.isConnected());
+        Log.e("LogsFunctions", " \nonConnected - isConnected : " + googleApiClient.isConnected());
 
         if (googleApiClient.isConnected()) {
             if (checkGpsEnabled()) {
@@ -768,7 +767,7 @@ public class MainActivity extends AppCompatActivity
     //LocationListener provides call back for location change through onLocationChanged.
     @Override
     public void onLocationChanged(Location location) {
-        writeLogsAndroid(" \nFiring onLocationChanged .........");
+        Log.e("LogsFunctions", " \nFiring onLocationChanged .........");
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         handleNewLocation(location);
     }
@@ -784,13 +783,13 @@ public class MainActivity extends AppCompatActivity
                 e.printStackTrace();
             }
         } else {
-            writeLogsAndroid(" \nConnection failed: " + connectionResult.toString());
+            Log.e("LogsFunctions", " \nConnection failed: " + connectionResult.toString());
         }
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        writeLogsAndroid(" \nonConnectionSuspended .........");
+        Log.e("LogsFunctions", " \nonConnectionSuspended .........");
     }
 }
 
