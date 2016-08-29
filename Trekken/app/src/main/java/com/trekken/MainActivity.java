@@ -682,9 +682,13 @@ public class MainActivity extends AppCompatActivity
                             } while (dataIterator.hasNext());
                             gMap.clear();
 
-                            PolylineOptions options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
-                            line = gMap.addPolyline(options2);
-                            pointsFromDb.clear();
+                            if (pointsFromDb.size() > 0) {
+                                PolylineOptions options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
+                                line = gMap.addPolyline(options2);
+                                pointsFromDb.clear();
+                            } else {
+                                Toast.makeText(MainActivity.this, "No paths found for this user", Toast.LENGTH_SHORT).show();
+                            }
                         }
 
                         @Override
