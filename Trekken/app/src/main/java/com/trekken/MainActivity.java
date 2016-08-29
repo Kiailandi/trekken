@@ -454,15 +454,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        btnNear = (Button)findViewById(R.id.btnNear);
-
-        btnNear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                lookForNearPaths();
-            }
-        });
-
         txtLog.setTextIsSelectable(true);
         txtLog.setText("Map_v2 onCreate " + DateFormat.getTimeInstance().format(new Date()) + " .........");
         //endregion
@@ -662,8 +653,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        DataSnapshot tmp;
-        if (id == R.id.nav_paths) {
+        if (id == R.id.nav_my_paths) {
             mRef = FirebaseDatabase.getInstance().getReference();
             pointsFromDb = new ArrayList<>();
             mRef.child("paths/").addValueEventListener(
@@ -688,8 +678,8 @@ public class MainActivity extends AppCompatActivity
                         }
                     });
 
-        } else if (id == R.id.nav_gallery) {
-            Toast.makeText(this, "gallery pressed", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_near_paths) {
+            lookForNearPaths();
 
         } else if (id == R.id.nav_manage) {
             Intent intent = new Intent(this, SettingsActivity.class);
