@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -44,6 +45,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -61,6 +66,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -420,11 +426,15 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 if (fabPlay) {
                     //emula start button
+                    googleApiClient.connect();
+
                     startStop = R.drawable.ic_stop_white_24dp;
                     sbarMessage = "Recording your path";
                     fabPlay = false;
                 } else {
                     //emula log button
+                    writeLogs();
+
                     startStop = R.drawable.ic_play_arrow_white_24dp;
                     sbarMessage = "Path finished";
                     fabPlay = true;
@@ -531,20 +541,7 @@ public class MainActivity extends AppCompatActivity
 
         //Caricamento Display Name
         defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String dysplayName = defaultPref.getString("display_name", "banana");
-
-        //Caricamento immagine utente
-        Resources res = getResources();
-        Bitmap src = null;
-        try {
-            src = MediaStore.Images.Media.getBitmap(this.getContentResolver(), FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl());
-        } catch (Exception e) {
-            //Handle problems from contentResolver or Firebase
-            src = BitmapFactory.decodeResource(res, R.drawable.rospo);
-        }
-        //Bitmap src = BitmapFactory.decodeResource(res, );
-        final RoundedBitmapDrawable dr = RoundedBitmapDrawableFactory.create(res, src);
-        dr.setCornerRadius(Math.max(src.getWidth(), src.getHeight()) / 2.0f);
+        final String dysplayName = defaultPref.getString("display_name", "banana");
 
         //Trovo la view della Nav Bar per cambiare gli elementi all interno (senza inflate)
         navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -559,9 +556,34 @@ public class MainActivity extends AppCompatActivity
         TextView txtName = (TextView) headerLayout.findViewById(R.id.textViewName);
         txtName.setText(dysplayName);
 
-        //Metto immagine utente
-        ImageView imgProfilo = (ImageView) headerLayout.findViewById(R.id.imageProfile);
-        imgProfilo.setImageDrawable(dr);
+        //Caricamento immagine utente
+        final Resources res = getResources();
+        final ImageView imgProfilo = (ImageView) headerLayout.findViewById(R.id.imageProfile);
+        //Tries to get the user's Google profile picture
+        try {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user.getPhotoUrl() != null) {
+                Glide.with(this).load(user.getPhotoUrl()).asBitmap().fitCenter().into(new BitmapImageViewTarget(imgProfilo) {
+                    @Override
+                    protected void setResource(Bitmap resource) {
+                        Log.i("banana", Integer.toString(resource.getHeight()));
+                        RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(res, resource);
+                        circularBitmapDrawable.setCornerRadius(Math.max(resource.getWidth(), resource.getHeight()) / 2.0f);
+                        imgProfilo.setImageDrawable(circularBitmapDrawable);
+                    }
+                });
+            }
+        } catch (Exception e) {
+            //Handle problems from contentResolver or Firebase
+            Log.e("Firebase", "No picture found");
+        }
+        //Uses a default picture if none can be found
+        finally {
+            Bitmap src = BitmapFactory.decodeResource(res, R.drawable.rospo);
+            RoundedBitmapDrawable dr = RoundedBitmapDrawableFactory.create(res, src);
+            dr.setCornerRadius(Math.max(src.getWidth(), src.getHeight()) / 2.0f);
+            imgProfilo.setImageDrawable(dr);
+        }
         //endregion
 
         //region Material Design
