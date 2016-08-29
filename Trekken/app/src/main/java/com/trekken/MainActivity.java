@@ -362,24 +362,12 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mRef = FirebaseDatabase.getInstance().getReference(); //TODO inizializzarlo all inizio
-
-        mRef.child("paths/").addValueEventListener(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        paths = dataSnapshot;
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
-
         //Checking the presence of googlePlayServices
         if (!isGooglePlayServicesAvailable()) {
             finish(); // drastic!
         }
+
+        mRef = FirebaseDatabase.getInstance().getReference();
 
         //Setup design elements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -581,7 +569,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-
+        //Online Settings Changes
         //Caricamento Display Name
         defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
         String dysplayName = defaultPref.getString("display_name", "banana");
@@ -635,37 +623,44 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         pointsFromDb = new ArrayList<>();
-        DataSnapshot tmp;
-        nearpaths = new ArrayList<>();
-        if (id == R.id.nav_paths) {
-            for (DataSnapshot path : paths.getChildren()) {
-                tmp = path.child("points").child("0");
-                if(isInRadius(new LatLng(Double.parseDouble(tmp.child("latitude").getValue().toString()), Double.parseDouble(tmp.child("longitude").getValue().toString())))){
-                    nearpaths.add(path.getKey().toString());
-                }
-            }
 
-            gMap.clear();
-            for(String key : nearpaths) {
-                for(DataSnapshot point : paths.child(key).child("points").getChildren()){
-                    pointsFromDb.add(new LatLng(Double.parseDouble(point.child("latitude").getValue().toString()), Double.parseDouble(point.child("longitude").getValue().toString())));
-                    //disegna percorso qui
-                    //options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
-                    //line = gMap.addPolyline(options2);
-                }
-                pointsFromDb.clear();
-            }
+        //Prints the paths created by the user
+        if (id == R.id.nav_paths) {
+            mRef = FirebaseDatabase.getInstance().getReference();
+            pointsFromDb = new ArrayList<>();
+            mRef.child("paths/").addValueEventListener(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Iterator<DataSnapshot> dataIterator = dataSnapshot.getChildren().iterator();
+                            //Takes only the first path
+                            for (DataSnapshot item : dataIterator.next().child("points").getChildren()) {
+                                pointsFromDb.add(new LatLng(Double.parseDouble(item.child("latitude").getValue().toString()), Double.parseDouble(item.child("longitude").getValue().toString())));
+                            }
+
+                            //gMap.clear();
+
+                            options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
+                            line = gMap.addPolyline(options2);
+                            pointsFromDb.clear();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
 
         } else if (id == R.id.nav_gallery) {
             Toast.makeText(this, "gallery pressed", Toast.LENGTH_SHORT).show();
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_manage) { //Launch Settings
             Intent intent = new Intent(this, SettingsActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             //finish();
             startActivity(intent);
 
-        } else if (id == R.id.nav_signout) {
+        } else if (id == R.id.nav_signout) { //Sign out
             //Delete stored informations about user's login
             SharedPreferences sharedPref = this.getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
@@ -679,7 +674,7 @@ public class MainActivity extends AppCompatActivity
             finish(); //calls onDestroy()
             startActivity(intent);
 
-        } else if (id == R.id.nav_close) {
+        } else if (id == R.id.nav_close) { //Close the App
             finish(); //calls onDestroy(), free some resources
         }
 
