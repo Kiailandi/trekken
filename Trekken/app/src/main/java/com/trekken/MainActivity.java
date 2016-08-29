@@ -270,6 +270,8 @@ public class MainActivity extends AppCompatActivity
                     writer.append((i + 1) + ";" + pathPoints.get(i).latitude + ";" + pathPoints.get(i).longitude + ";" + pathPointsAccuracy.get(i) + "\r\n");
                 }
                 writer.flush();
+                //TODO resettare qui polyline e array
+                pathPoints.clear();
                 Toast.makeText(getApplicationContext(), filepath.getName() + " creato! " + pathPoints.size() + " records", Toast.LENGTH_LONG).show();
             }
 
@@ -670,26 +672,31 @@ public class MainActivity extends AppCompatActivity
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             Iterator<DataSnapshot> dataIterator = dataSnapshot.getChildren().iterator();
                             Iterator<DataSnapshot> pointsIterator;
+                            LatLng tmpPoint;
+                            boolean first = true;
 
+                            gMap.clear();
                             //Check for every path if it has been created by the current user
                             do {
                                 DataSnapshot tmp = dataIterator.next(); //Current path
                                 if (tmp.child("creator").getValue().toString().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                                     pointsIterator = tmp.getChildren().iterator();
                                     for (DataSnapshot item : pointsIterator.next().child("points").getChildren()) {
-                                        pointsFromDb.add(new LatLng(Double.parseDouble(item.child("latitude").getValue().toString()), Double.parseDouble(item.child("longitude").getValue().toString())));
+                                        tmpPoint = new LatLng(Double.parseDouble(item.child("latitude").getValue().toString()), Double.parseDouble(item.child("longitude").getValue().toString()));
+                                        pointsFromDb.add(tmpPoint);
+                                        if (first) {
+                                            gMap.addMarker(new MarkerOptions().position(tmpPoint).title("Start point"));
+                                            first = false;
+                                        }
                                     }
+
+                                    first = false;
+                                    PolylineOptions options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
+                                    line = gMap.addPolyline(options2);
+                                    pointsFromDb.clear();
                                 }
                             } while (dataIterator.hasNext());
-                            gMap.clear();
-
-                            if (pointsFromDb.size() > 0) {
-                                PolylineOptions options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
-                                line = gMap.addPolyline(options2);
-                                pointsFromDb.clear();
-                            } else {
-                                Toast.makeText(MainActivity.this, "No paths found for this user", Toast.LENGTH_SHORT).show();
-                            }
+                            Log.i("banana", "My path");
                         }
 
                         @Override
