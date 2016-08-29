@@ -125,18 +125,16 @@ public class MainActivity extends AppCompatActivity
     //private FirebaseAuth mAuth;
     private DatabaseReference mRef;
 
-    String mLastUpdateTime;
+    String mLastUpdateTime, sbarMessage, _pathLoad;
     GoogleMap gMap = null;
-    boolean afterOnConnected = false;
-    boolean movedByUser = false;
+    boolean afterOnConnected = false, movedByUser = false, fabPlay = true;
 
     static final int lineWidth = 6;
 
     File filepath;
     FileWriter writer;
 
-    int waitToStart = 1, trackColor, trackColorNear;
-    String _pathLoad;
+    int waitToStart = 1, trackColor, trackColorNear, startStop;
 
     final double radius = 1.24274;
 
@@ -416,13 +414,24 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, SignInActivity.class);
-                startActivity(intent);
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                if (fabPlay) {
+                    //emula start button
+                    startStop = R.drawable.ic_stop_white_24dp;
+                    sbarMessage = "Recording your path";
+                    fabPlay = false;
+                } else {
+                    //emula log button
+                    startStop = R.drawable.ic_play_arrow_white_24dp;
+                    sbarMessage = "Path finished";
+                    fabPlay = true;
+                }
+
+                fab.setImageResource(startStop);
+                Snackbar.make(view, sbarMessage, Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
