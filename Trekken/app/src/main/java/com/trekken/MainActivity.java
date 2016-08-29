@@ -652,7 +652,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         DataSnapshot tmp;
-        if (id == R.id.nav_paths) {
+        if (id == R.id.nav_my_paths) {
             mRef = FirebaseDatabase.getInstance().getReference();
             pointsFromDb = new ArrayList<>();
             mRef.child("paths/").addValueEventListener(
@@ -685,7 +685,7 @@ public class MainActivity extends AppCompatActivity
                         }
                     });
 
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_near_paths) {
             Toast.makeText(this, "gallery pressed", Toast.LENGTH_SHORT).show();
 
         } else if (id == R.id.nav_manage) {
