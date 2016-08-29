@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity
     private Sensor snrAccelerometer;
     private SensorEventListener listenerAccelerometer;
     private double rootSquare;
-    static final double threshold = 3.0; //TODO rimettere 1.5 a fine test
+    static final double threshold = 1.0; //TODO rimettere 1.5 a fine test
     private DataSnapshot paths;
 
     EditText txtLog;
@@ -661,10 +661,18 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             Iterator<DataSnapshot> dataIterator = dataSnapshot.getChildren().iterator();
-                            for (DataSnapshot item : dataIterator.next().child("points").getChildren()) {
-                                pointsFromDb.add(new LatLng(Double.parseDouble(item.child("latitude").getValue().toString()), Double.parseDouble(item.child("longitude").getValue().toString())));
-                            }
+                            Iterator<DataSnapshot> pointsIterator;
 
+                            //Check for every path if it has been created by the current user
+                            do {
+                                DataSnapshot tmp = dataIterator.next(); //Current path
+                                if (tmp.child("creator").getValue().toString().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                    pointsIterator = tmp.getChildren().iterator();
+                                    for (DataSnapshot item : pointsIterator.next().child("points").getChildren()) {
+                                        pointsFromDb.add(new LatLng(Double.parseDouble(item.child("latitude").getValue().toString()), Double.parseDouble(item.child("longitude").getValue().toString())));
+                                    }
+                                }
+                            } while (dataIterator.hasNext());
                             gMap.clear();
 
                             PolylineOptions options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
