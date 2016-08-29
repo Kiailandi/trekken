@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener, GoogleMap.OnCameraMoveStartedListener {
 //      Ex CaricaLog -> Chiama il FileBrowser
 //    Intent myIntent = new Intent(MainActivity.this, FileBrowserActivity.class);
 //    myIntent.putExtra("key", 15); //Optional parameters
@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity
     String mLastUpdateTime;
     GoogleMap gMap = null;
     boolean afterOnConnected = false;
+    boolean movedByUser = false;
 
     static final int lineWidth = 6;
 
@@ -312,7 +313,7 @@ public class MainActivity extends AppCompatActivity
                 double lat = mCurrentLocation.getLatitude();
                 double lng = mCurrentLocation.getLongitude();
 
-                Log.d("LogsFunctions", " \n\nAt Time: " + mLastUpdateTime + "\n" +
+                Log.d("NewLocation", " \n\nAt Time: " + mLastUpdateTime + "\n" +
                         "Latitude: " + lat + "\n" +
                         "Longitude: " + lng + "\n" +
                         "Accuracy: " + mCurrentLocation.getAccuracy() + "\n" +
@@ -320,12 +321,14 @@ public class MainActivity extends AppCompatActivity
 
                 final LatLng currentPosition = new LatLng(lat, lng);
 
-                if (!afterOnConnected)
-                    gMap.animateCamera(CameraUpdateFactory.newLatLng(currentPosition));
-                else {
+                //TODO TEST: inseguimento pallino blu
+
+                if(afterOnConnected){
                     gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 14));
                     afterOnConnected = false;
                 }
+                else if(!movedByUser)
+                    gMap.animateCamera(CameraUpdateFactory.newLatLng(currentPosition));
 
                 DecimalFormat df = new DecimalFormat("#.#####");
                 df.setRoundingMode(RoundingMode.CEILING);
@@ -385,6 +388,17 @@ public class MainActivity extends AppCompatActivity
         gMap = map;
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             gMap.setMyLocationEnabled(true);
+
+        gMap.setOnCameraMoveStartedListener(this);
+        gMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                //CareTo mCurrentLocation != null
+                movedByUser = false;
+                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 14));
+                return true;
+            }
+        });
     }
 
     @Override
@@ -809,6 +823,21 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onConnectionSuspended(int i) {
         Log.e("LogsFunctions", " \nonConnectionSuspended .........");
+    }
+
+    @Override
+    public void onCameraMoveStarted(int i) {
+        if (i == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
+            Log.d("LogsFunctions", "The user gestured on the map.");
+            movedByUser = true;
+        }
+//        else if (i == GoogleMap.OnCameraMoveStartedListener
+//                .REASON_API_ANIMATION) {
+//            Log.d("TestEvent", "The user tapped something on the map.");
+//        } else if (i == GoogleMap.OnCameraMoveStartedListener
+//                .REASON_DEVELOPER_ANIMATION) {
+//            Log.d("TestEvent", "The app moved the camera.");
+//        }
     }
 }
 
