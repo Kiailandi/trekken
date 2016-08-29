@@ -169,7 +169,32 @@ public class MainActivity extends AppCompatActivity
     }
 
     protected void lookForNearPaths(){
-        //Ask monte di caricare la lista nell'onCreate
+        nearpaths = new ArrayList<>();
+        pointsFromDb = new ArrayList<>();
+
+        DataSnapshot tmp;
+
+        for (DataSnapshot path : paths.getChildren()) {
+            tmp = path.child("points").child("0");
+            if(isInRadius(new LatLng(Double.parseDouble(tmp.child("latitude").getValue().toString()), Double.parseDouble(tmp.child("longitude").getValue().toString())))){
+                nearpaths.add(path.getKey().toString());
+            }
+        }
+
+        gMap.clear();
+
+        for(String key : nearpaths) {
+            for(DataSnapshot point : paths.child(key).child("points").getChildren()){
+                pointsFromDb.add(new LatLng(Double.parseDouble(point.child("latitude").getValue().toString()), Double.parseDouble(point.child("longitude").getValue().toString())));
+                //disegna percorso qui
+                options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
+                line = gMap.addPolyline(options2);
+            }
+
+            pointsFromDb.clear();
+        }
+
+        nearpaths.clear();
     }
 
     protected boolean isInRadius(LatLng pos){
@@ -361,20 +386,6 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mRef = FirebaseDatabase.getInstance().getReference(); //TODO inizializzarlo all inizio
-
-        mRef.child("paths/").addValueEventListener(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        paths = dataSnapshot;
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
 
         //Checking the presence of googlePlayServices
         if (!isGooglePlayServicesAvailable()) {
@@ -576,6 +587,20 @@ public class MainActivity extends AppCompatActivity
         createLocationRequest();
         if (defaultPref.getBoolean("fall_detection", true))
             startSensors();
+
+        mRef = FirebaseDatabase.getInstance().getReference(); //TODO inizializzarlo all inizio
+
+        mRef.child("paths/").addValueEventListener(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        paths = dataSnapshot;
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
     }
 
     @Override
@@ -602,6 +627,7 @@ public class MainActivity extends AppCompatActivity
                 trackColor = ContextCompat.getColor(this, R.color.colorPrimary2);
                 break; //Red
         }
+
     }
 
     @Override
@@ -634,9 +660,8 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        pointsFromDb = new ArrayList<>();
+
         DataSnapshot tmp;
-        nearpaths = new ArrayList<>();
         if (id == R.id.nav_paths) {
             for (DataSnapshot path : paths.getChildren()) {
                 tmp = path.child("points").child("0");
