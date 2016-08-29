@@ -183,12 +183,20 @@ public class MainActivity extends AppCompatActivity
 
         gMap.clear();
 
+        int i = 0;
+
         for(String key : nearpaths) {
             for(DataSnapshot point : paths.child(key).child("points").getChildren()){
-                pointsFromDb.add(new LatLng(Double.parseDouble(point.child("latitude").getValue().toString()), Double.parseDouble(point.child("longitude").getValue().toString())));
+                LatLng tmpPoint = new LatLng(Double.parseDouble(point.child("latitude").getValue().toString()), Double.parseDouble(point.child("longitude").getValue().toString()));
+                pointsFromDb.add(tmpPoint);
                 //disegna percorso qui
                 PolylineOptions options = new PolylineOptions().width(lineWidth).color(trackColorNear).geodesic(true).addAll(pointsFromDb);
                 line = gMap.addPolyline(options);
+
+                if(i == 0) {
+                    gMap.addMarker(new MarkerOptions().position(tmpPoint).title("Start point"));
+                    i++;
+                }
             }
 
             pointsFromDb.clear();
@@ -338,9 +346,9 @@ public class MainActivity extends AppCompatActivity
             } else {
                 Log.e("LogsFunctions", " \nLocation is null .........");
 
-                final LatLng besenello = new LatLng(45.940966, 11.1091463);
-                gMap.addMarker(new MarkerOptions().position(besenello).title("Marker a Besenello"));
-                gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(besenello, 14));
+//                final LatLng besenello = new LatLng(45.940966, 11.1091463);
+//                gMap.addMarker(new MarkerOptions().position(besenello).title("Marker a Besenello"));
+//                gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(besenello, 14));
             }
 
         } else
