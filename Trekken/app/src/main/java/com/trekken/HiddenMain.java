@@ -7,14 +7,26 @@ import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.annotation.MainThread;
+import android.support.annotation.StringRes;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.view.View;
+
+import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
+
+import butterknife.BindView;
 
 public class HiddenMain extends Activity {
 
     SensorManager sMng;
     List<Sensor> sensorList;
+    private static final int RC_SIGN_IN = 100;
+    @BindView(android.R.id.content)
+    View mRootView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +45,14 @@ public class HiddenMain extends Activity {
 
         // Se non ce salvato nessuno nelle SharedPreferences lancia Login
         if(textData.equals("no")) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            finish();
-            startActivity(intent);
+            startActivityForResult(
+                    AuthUI.getInstance().createSignInIntentBuilder()
+                        /*DEBUG*/
+                            .setIsSmartLockEnabled(false)
+                            .setTheme(AuthUI.getDefaultTheme())
+                            .setProviders(AuthUI.GOOGLE_PROVIDER)
+                            .build(),
+                    RC_SIGN_IN);
         }
 
         else {
@@ -46,4 +62,47 @@ public class HiddenMain extends Activity {
             startActivity(intent);
         }
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_SIGN_IN) {
+            handleSignInResponse(resultCode, data);
+            return;
+        }
+
+        showSnackbar(R.string.unknown_response);
+    }
+
+    @MainThread
+    private void handleSignInResponse(int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            SharedPreferences sharedPref = this.getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
+
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("logged", "yes");
+            editor.putString("email", FirebaseAuth.getInstance().getCurrentUser().getEmail());
+            //editor.putString("email", mPassword); Questo non dovrebbe essere necessario e crea problemi inutili
+            editor.apply();
+
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            finish();
+            startActivity(intent);
+
+            return;
+        }
+
+        if (resultCode == RESULT_CANCELED) {
+            showSnackbar(R.string.sign_in_cancelled);
+            return;
+        }
+
+        showSnackbar(R.string.unknown_sign_in_response);
+    }
+
+    @MainThread
+    private void showSnackbar(@StringRes int errorMessageRes) {
+        Snackbar.make(mRootView, errorMessageRes, Snackbar.LENGTH_LONG).show();
+    }
+
 }

@@ -205,7 +205,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         /*DEBUG*/
                         .setIsSmartLockEnabled(false)
                         .setTheme(AuthUI.getDefaultTheme())
-                        .setProviders(AuthUI.EMAIL_PROVIDER)
+                        .setProviders(AuthUI.GOOGLE_PROVIDER)
                         .build(),
                 RC_SIGN_IN);
     }

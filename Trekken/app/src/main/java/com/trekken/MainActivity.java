@@ -754,7 +754,7 @@ public class MainActivity extends AppCompatActivity
             editor.apply();
 
             //Going back to Login Activity
-            Intent intent = new Intent(this, LoginActivity.class);
+            Intent intent = new Intent(this, HiddenMain.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             finish(); //calls onDestroy()
             startActivity(intent);
