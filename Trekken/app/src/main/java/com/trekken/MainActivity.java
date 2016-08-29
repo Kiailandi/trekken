@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 writer.flush();
                 //TODO resettare qui polyline e array
-                pathPoints.clear();
+                //pathPoints.clear();
                 Toast.makeText(getApplicationContext(), filepath.getName() + " creato! " + pathPoints.size() + " records", Toast.LENGTH_LONG).show();
             }
 
@@ -671,7 +671,7 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             Iterator<DataSnapshot> dataIterator = dataSnapshot.getChildren().iterator();
-                            Iterator<DataSnapshot> pointsIterator;
+                            DataSnapshot pointsIterator;
                             LatLng tmpPoint;
                             boolean first = true;
 
@@ -680,8 +680,10 @@ public class MainActivity extends AppCompatActivity
                             do {
                                 DataSnapshot tmp = dataIterator.next(); //Current path
                                 if (tmp.child("creator").getValue().toString().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                                    pointsIterator = tmp.getChildren().iterator();
-                                    for (DataSnapshot item : pointsIterator.next().child("points").getChildren()) {
+                                    Log.i("banana", "creatore riconosciuto");
+                                    pointsIterator = tmp.child("points");
+                                    for (DataSnapshot item : pointsIterator.getChildren()) {
+                                        Log.i("banana", item.toString());
                                         tmpPoint = new LatLng(Double.parseDouble(item.child("latitude").getValue().toString()), Double.parseDouble(item.child("longitude").getValue().toString()));
                                         pointsFromDb.add(tmpPoint);
                                         if (first) {
@@ -690,13 +692,12 @@ public class MainActivity extends AppCompatActivity
                                         }
                                     }
 
-                                    first = false;
+                                    first = true;
                                     PolylineOptions options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
                                     line = gMap.addPolyline(options2);
                                     pointsFromDb.clear();
                                 }
                             } while (dataIterator.hasNext());
-                            Log.i("banana", "My path");
                         }
 
                         @Override
