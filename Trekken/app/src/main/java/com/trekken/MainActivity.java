@@ -109,7 +109,6 @@ public class MainActivity extends AppCompatActivity
     ArrayList<LatLng> pathPoints, pointsFromDb;
     ArrayList<String> nearpaths;
     Polyline line;
-    PolylineOptions options2;
     ArrayList<Float> pathPointsAccuracy;
 
     GoogleApiClient googleApiClient;
@@ -187,8 +186,8 @@ public class MainActivity extends AppCompatActivity
             for(DataSnapshot point : paths.child(key).child("points").getChildren()){
                 pointsFromDb.add(new LatLng(Double.parseDouble(point.child("latitude").getValue().toString()), Double.parseDouble(point.child("longitude").getValue().toString())));
                 //disegna percorso qui
-                options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
-                line = gMap.addPolyline(options2);
+                PolylineOptions options = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
+                line = gMap.addPolyline(options);
             }
 
             pointsFromDb.clear();
