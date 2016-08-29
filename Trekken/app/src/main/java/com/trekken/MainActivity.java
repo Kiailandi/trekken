@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity
     Button btnNear;
 
     ArrayList<LatLng> pathPoints, pointsFromDb;
+    ArrayList<String> nearpaths;
     Polyline line;
     PolylineOptions options2;
     ArrayList<Float> pathPointsAccuracy;
@@ -165,6 +166,10 @@ public class MainActivity extends AppCompatActivity
         }
 
         return ret;
+    }
+
+    protected void lookForNearPaths(){
+        //Ask monte di caricare la lista nell'onCreate
     }
 
     protected boolean isInRadius(LatLng pos){
@@ -442,7 +447,7 @@ public class MainActivity extends AppCompatActivity
         btnNear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //lookForNearPaths();
+                lookForNearPaths();
             }
         });
 
@@ -631,12 +636,13 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         pointsFromDb = new ArrayList<>();
         DataSnapshot tmp;
-        ArrayList<String> nearpaths = new ArrayList<String>();
+        nearpaths = new ArrayList<>();
         if (id == R.id.nav_paths) {
             for (DataSnapshot path : paths.getChildren()) {
                 tmp = path.child("points").child("0");
                 if(isInRadius(new LatLng(Double.parseDouble(tmp.child("latitude").getValue().toString()), Double.parseDouble(tmp.child("longitude").getValue().toString())))){
-                    nearpaths.add(path.getKey().toString());                }
+                    nearpaths.add(path.getKey().toString());
+                }
             }
 
             gMap.clear();
