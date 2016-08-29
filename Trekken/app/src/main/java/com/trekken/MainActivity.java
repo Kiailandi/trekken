@@ -633,6 +633,9 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             Iterator<DataSnapshot> dataIterator = dataSnapshot.getChildren().iterator();
+                            if (dataIterator.next().child("creator").getChildren().toString().equals(FirebaseAuth.getInstance().getCurrentUser().getUid().toString())) {
+
+                            }
                             //Takes only the first path
                             for (DataSnapshot item : dataIterator.next().child("points").getChildren()) {
                                 pointsFromDb.add(new LatLng(Double.parseDouble(item.child("latitude").getValue().toString()), Double.parseDouble(item.child("longitude").getValue().toString())));
