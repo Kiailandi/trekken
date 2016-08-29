@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/group_menu_1"
+        android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_paths"
+            android:id="@+id/nav_near_paths"
+            android:icon="@drawable/ic_wallpaper_black_24dp"
+            android:title="Near Paths" />
+        <item
+            android:id="@+id/nav_my_paths"
             android:icon="@drawable/ic_menu_gallery"
             android:title="My Paths" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Camera" />
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
             android:title="Settings" />
     </group>
 
-    <item android:title="Close">
-        <menu>
+    <group
+        android:id="@+id/group_menu_2"
+        android:checkableBehavior="single">
             <item
                 android:id="@+id/nav_signout"
                 android:icon="@drawable/ic_arrow_back_black_24dp"
@@ -26,7 +28,6 @@
                 android:id="@+id/nav_close"
                 android:icon="@drawable/ic_exit_to_app_black_24dp"
                 android:title="Close" />
-        </menu>
-    </item>
+    </group>
 
 </menu>
