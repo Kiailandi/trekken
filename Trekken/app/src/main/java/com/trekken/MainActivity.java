@@ -694,8 +694,7 @@ public class MainActivity extends AppCompatActivity
                     });
 
         } else if (id == R.id.nav_near_paths) {
-            Toast.makeText(this, "gallery pressed", Toast.LENGTH_SHORT).show();
-
+            lookForNearPaths();
         } else if (id == R.id.nav_manage) {
             Intent intent = new Intent(this, SettingsActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
