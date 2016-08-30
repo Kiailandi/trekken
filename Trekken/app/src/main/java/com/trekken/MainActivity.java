@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity
     File filepath;
     FileWriter writer;
 
-    int waitToStart = 1, trackColor, trackColorNear, startStop;
+    int waitToStart = 1, trackColor, trackColorNear, startStop, firstLocation = 0;
 
     final double radius = 1.24274;
 
@@ -345,6 +345,7 @@ public class MainActivity extends AppCompatActivity
 //                else if(pathPoints.size() < 1){
                     pathPoints.add(currentPosition);
                     pathPointsAccuracy.add(mCurrentLocation.getAccuracy());
+
 //                }
 
                 Log.d("Coordinate", "Size: " + pathPoints.size());
@@ -354,6 +355,11 @@ public class MainActivity extends AppCompatActivity
 
                 PolylineOptions options = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pathPoints);
                 line = gMap.addPolyline(options);
+                if (firstLocation == 0) {
+                    googleApiClient.disconnect();
+                    firstLocation++;
+                }
+
             } else {
                 Log.e("LogsFunctions", " \nLocation is null .........");
 
@@ -571,6 +577,8 @@ public class MainActivity extends AppCompatActivity
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(AppIndex.API).build();
+
+        googleApiClient.connect();
 
         //Starting GPS and Accelerometer Services
         createLocationRequest();
