@@ -238,6 +238,13 @@ public class MainActivity extends AppCompatActivity
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
+
+            ad.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialogInterface) {
+                    updateLocationAfterGps();
+                }
+            });
         }
 
         return ((LocationManager) this.getSystemService(LOCATION_SERVICE)).isProviderEnabled(LocationManager.GPS_PROVIDER) || ((LocationManager) this.getSystemService(LOCATION_SERVICE)).isProviderEnabled(LocationManager.NETWORK_PROVIDER);
@@ -379,10 +386,22 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onMyLocationButtonClick() {
                 movedByUser = false;
-                gMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+
+                if (mCurrentLocation != null)
+                    gMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+                else {
+                    checkGpsEnabled();
+                }
                 return true;
             }
         });
+    }
+
+    protected void updateLocationAfterGps(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            afterOnConnected = true;
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);  //return this PendingResult<Status> pendingResult;
+        }
     }
 
     @Override
