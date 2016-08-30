@@ -201,12 +201,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     protected boolean isInRadius(LatLng pos){
-//        a = Math.Acos(Math.Sin(LatFromDb * 0.0175) * Math.Sin(LatCurrentPos * 0.0175)
-//                + Math.Cos(LatFromDb * 0.0175) * Math.Cos(LatCurrentPos * 0.0175)
-//                * Math.Cos((LonCurrentPos * 0.0175) - (LonFromDb * 0.0175))) * 3959;
-//
-//        a <= 1.24274 (2Km)
-
         double latFromDb = pos.latitude;
         double lonFromDb = pos.longitude;
         double latCurrentPos = mCurrentLocation.getLatitude();
@@ -221,14 +215,14 @@ public class MainActivity extends AppCompatActivity
 
     protected boolean checkGpsEnabled() {
 
-        String msg = "Per una maggiore precisione ti consigliamo di attivare il gps in modalità precisione elevata, vuoi abilitarlo?";
+        String msg = "For a better precision we advise you to set the GPS to High-Precision, want to enable it?";
         boolean gpsEnabled = ((LocationManager) this.getSystemService(LOCATION_SERVICE)).isProviderEnabled(LocationManager.GPS_PROVIDER);
 
         if (!gpsEnabled) {
             AlertDialog ad = new AlertDialog.Builder(MainActivity.this)
-                    .setTitle("Attiva GPS")
+                    .setTitle("Activate GPS")
                     .setMessage(msg)
-                    .setPositiveButton("Vai a impostazioni", new DialogInterface.OnClickListener() {
+                    .setPositiveButton("Go to settings", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
 
                             Intent gpsOptionsIntent = new Intent(
@@ -370,7 +364,7 @@ public class MainActivity extends AppCompatActivity
         else if (requestCode == 2) {
             startSensors();
         } else
-            Toast.makeText(this, "Nessun file selezionato", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No file selected", Toast.LENGTH_LONG).show();
 
     }
 
@@ -706,7 +700,7 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                //Delete stored informations about user's login
+                                //Delete stored information about user's login
                                 SharedPreferences sharedPref = MainActivity.this.getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPref.edit();
                                 editor.remove("logged");
