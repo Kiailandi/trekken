@@ -36,12 +36,6 @@ public class FallDetection extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.popup_timer);
 
-        //Toast.makeText(this, "Fall detected", Toast.LENGTH_SHORT).show();
-
-        //AlertDialog setup, inflating his view and finding ProgressBar and Button
-        //AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
-        //helpBuilder.setTitle("Fall Detected !");
-
         /** LayoutInflater inflater = getLayoutInflater();
          View popupLayout = inflater.inflate(R.layout.popup_timer, (ViewGroup) MainActivity.this.findViewById(R.id.popup_layout));
          helpBuilder.setView(popupLayout);
@@ -117,8 +111,6 @@ public class FallDetection extends Activity {
                 pbHandler.removeCallbacks(r);
                 alarm.stop();
                 v.cancel();
-                // startSensors();
-                // helpDialog.dismiss();
 
                 Intent returnIntent = new Intent();
                 setResult(2, returnIntent);
@@ -135,7 +127,6 @@ public class FallDetection extends Activity {
         pbHandler.removeCallbacks(r);
         alarm.stop();
         v.cancel();
-        // startSensors();
 
         Intent returnIntent = new Intent();
         setResult(2, returnIntent);

@@ -9,8 +9,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -20,12 +18,10 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -40,7 +36,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,7 +50,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -80,10 +74,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.RoundingMode;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -95,11 +86,6 @@ public class MainActivity extends AppCompatActivity
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener, GoogleMap.OnCameraMoveStartedListener {
-//      Ex CaricaLog -> Chiama il FileBrowser
-//    Intent myIntent = new Intent(MainActivity.this, FileBrowserActivity.class);
-//    myIntent.putExtra("key", 15); //Optional parameters
-//    //MainActivity.this.startActivity(myIntent);
-//    startActivityForResult(myIntent, 100);
 
     private NavigationView navigationView;
     private View headerLayout;
@@ -109,7 +95,7 @@ public class MainActivity extends AppCompatActivity
     private Sensor snrAccelerometer;
     private SensorEventListener listenerAccelerometer;
     private double rootSquare;
-    static final double threshold = 1.0; //TODO rimettere 1.5 a fine test
+    static final double threshold = 1.0;
     private DataSnapshot paths;
 
     ArrayList<LatLng> pathPoints, pointsFromDb, pointsFromDb2;
@@ -120,11 +106,10 @@ public class MainActivity extends AppCompatActivity
     GoogleApiClient googleApiClient;
     LocationRequest mLocationRequest;
     Location mCurrentLocation;
-    //LocationSettingsRequest.Builder builder;
 
-    //Check invertire
-    static final long time_interval = 1000 * 5;      //Millisecondi
-    static final long fastest_time_interval = 1000 * 3;    //Millisecondi
+    //Check invert
+    static final long time_interval = 1000 * 5;      //Milliseconds
+    static final long fastest_time_interval = 1000 * 3;    //Milliseconds
 
     //private FirebaseAuth mAuth;
     private DatabaseReference mRef;
@@ -132,14 +117,10 @@ public class MainActivity extends AppCompatActivity
     String mLastUpdateTime, sbarMessage, _pathLoad;
     GoogleMap gMap = null;
     boolean afterOnConnected = false, movedByUser = false, fabPlay = true;
-
     static final int lineWidth = 6;
-
     File filepath;
     FileWriter writer;
-
     int waitToStart = 1, trackColor, trackColorNear, startStop, firstLocation = 0;
-
     final double radius = 1.24274;
 
     private ArrayList<LatLng> readFromFile() {
@@ -180,8 +161,9 @@ public class MainActivity extends AppCompatActivity
         DataSnapshot tmp;
 
         for (DataSnapshot path : paths.getChildren()) {
-            tmp = path.child("points").child("0");
             try {
+                tmp = path.child("points").child("0");
+
                 if (isInRadius(new LatLng(Double.parseDouble(tmp.child("latitude").getValue().toString()), Double.parseDouble(tmp.child("longitude").getValue().toString())))) {
                     nearpaths.add(path.getKey());
                 }
@@ -332,8 +314,6 @@ public class MainActivity extends AppCompatActivity
 
                 final LatLng currentPosition = new LatLng(lat, lng);
 
-                //TODO TEST: inseguimento pallino blu
-
                 if(afterOnConnected){
                     gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 14));
                     afterOnConnected = false;
@@ -344,15 +324,8 @@ public class MainActivity extends AppCompatActivity
                 DecimalFormat df = new DecimalFormat("#.#####");
                 df.setRoundingMode(RoundingMode.CEILING);
 
-//                if(pathPoints.size() >= 1 && !(df.format(pathPoints.get(pathPoints.size() - 1).latitude).equals(df.format(mCurrentLocation.getLatitude())) && df.format(pathPoints.get(pathPoints.size() - 1).longitude).equals(df.format(mCurrentLocation.getLongitude())))) {
-//                    pathPoints.add(currentPosition);
-//                    pathPointsAccuracy.add(mCurrentLocation.getAccuracy());
-//                }
-//                else if(pathPoints.size() < 1){
                     pathPoints.add(currentPosition);
                     pathPointsAccuracy.add(mCurrentLocation.getAccuracy());
-
-//                }
 
                 Log.d("Coordinate", "Size: " + pathPoints.size());
                 for(int i = 0; i < pathPoints.size(); i++){
@@ -592,7 +565,7 @@ public class MainActivity extends AppCompatActivity
         if (defaultPref.getBoolean("fall_detection", true))
             startSensors();
 
-        mRef = FirebaseDatabase.getInstance().getReference(); //TODO inizializzarlo all inizio
+        mRef = FirebaseDatabase.getInstance().getReference();
 
         mRef.child("paths/").addValueEventListener(
                 new ValueEventListener() {

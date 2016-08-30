@@ -37,9 +37,6 @@ public class FileArrayAdapter extends ArrayAdapter<Item> {
             v = vi.inflate(_id, null);
         }
 
-               /* create a new view of my layout and inflate it in the row */
-        //convertView = ( RelativeLayout ) inflater.inflate( resource, null );
-
         final Item o = _items.get(position);
 
         if (o != null) {
@@ -62,7 +59,6 @@ public class FileArrayAdapter extends ArrayAdapter<Item> {
             if (t3 != null)
                 t3.setText(o.getDate());
         }
-
         return v;
     }
 }

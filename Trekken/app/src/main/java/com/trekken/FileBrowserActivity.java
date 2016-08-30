@@ -10,6 +10,7 @@ import java.text.DateFormat;
 import android.os.Bundle;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -31,8 +32,6 @@ public class FileBrowserActivity extends ListActivity {
         this.setTitle("Current Dir: " + f.getName());
         List<Item> directories = new ArrayList<Item>();
         List<Item> files = new ArrayList<Item>();
-
-        //possibile filtro qui
 
         try {
             for (File ff : dirs) {
@@ -62,7 +61,7 @@ public class FileBrowserActivity extends ListActivity {
                     files.add(new Item(ff.getName(), ff.length() + " Byte", date_modify, ff.getAbsolutePath(), "file_icon"));
             }
         } catch (Exception e) {
-
+            Log.e("ERROR", e.toString());
         }
 
         Collections.sort(directories);
@@ -79,7 +78,6 @@ public class FileBrowserActivity extends ListActivity {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        // TODO Auto-generated method stub
         super.onListItemClick(l, v, position, id);
         Item o = adapter.getItem(position);
         if (o.getImage().equalsIgnoreCase("directory_icon") || o.getImage().equalsIgnoreCase("directory_up")) {
@@ -91,7 +89,6 @@ public class FileBrowserActivity extends ListActivity {
     }
 
     private void onFileClick(Item object) {
-        //Toast.makeText(this, "Folder Clicked: "+ currentDir, Toast.LENGTH_SHORT).show();
         Intent intent = new Intent();
         intent.putExtra("GetPath", currentDir.toString());
         intent.putExtra("GetFileName", object.getName());

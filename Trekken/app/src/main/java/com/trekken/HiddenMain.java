@@ -8,8 +8,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.MainThread;
-import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 
@@ -35,7 +33,7 @@ public class HiddenMain extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hidden_main);
 
-        //Manda via Log tutti i sensori presenti sul dispositivo
+        //Send Log messages for every Sensor present
         sMng = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensorList = sMng.getSensorList(Sensor.TYPE_ALL);
         for (Sensor s: sensorList) {
@@ -45,7 +43,7 @@ public class HiddenMain extends Activity {
         SharedPreferences sharedPref = this.getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
         String textData = sharedPref.getString("logged", "no");
 
-        // Se non ce salvato nessuno nelle SharedPreferences lancia Login
+        // If there is no user saved in Shared Preferences, start Login
         if(textData.equals("no") && FirebaseAuth.getInstance().getCurrentUser() == null) {
             startActivityForResult(
                     AuthUI.getInstance().createSignInIntentBuilder()
@@ -58,6 +56,7 @@ public class HiddenMain extends Activity {
                     RC_SIGN_IN);
         }
 
+        //else go directly to Main Activity
         else {
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -72,8 +71,6 @@ public class HiddenMain extends Activity {
             handleSignInResponse(resultCode, data);
             return;
         }
-
-
     }
 
     @Override
