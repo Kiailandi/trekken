@@ -24,7 +24,9 @@ public class HiddenMain extends Activity {
 
     SensorManager sMng;
     List<Sensor> sensorList;
+
     private static final int RC_SIGN_IN = 100;
+
     @BindView(android.R.id.content)
     View mRootView;
 
@@ -44,19 +46,20 @@ public class HiddenMain extends Activity {
         String textData = sharedPref.getString("logged", "no");
 
         // Se non ce salvato nessuno nelle SharedPreferences lancia Login
-        if(textData.equals("no")) {
+        if(textData.equals("no") && FirebaseAuth.getInstance().getCurrentUser() == null) {
             startActivityForResult(
                     AuthUI.getInstance().createSignInIntentBuilder()
-                        /*DEBUG*/
+                            /*DEBUG - set to true on production*/
+                            .setLogo(R.drawable.tekken_logo)
                             .setIsSmartLockEnabled(false)
-                            .setTheme(AuthUI.getDefaultTheme())
-                            .setProviders(AuthUI.GOOGLE_PROVIDER)
+                            .setTheme(R.style.AppTheme)
+                            .setProviders(new String[]{AuthUI.EMAIL_PROVIDER, AuthUI.GOOGLE_PROVIDER})
                             .build(),
                     RC_SIGN_IN);
         }
 
         else {
-            Intent intent = new Intent(this,MainActivity.class);
+            Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             finish();
             startActivity(intent);
@@ -70,7 +73,7 @@ public class HiddenMain extends Activity {
             return;
         }
 
-        showSnackbar(R.string.unknown_response);
+
     }
 
     @MainThread
@@ -81,7 +84,6 @@ public class HiddenMain extends Activity {
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString("logged", "yes");
             editor.putString("email", FirebaseAuth.getInstance().getCurrentUser().getEmail());
-            //editor.putString("email", mPassword); Questo non dovrebbe essere necessario e crea problemi inutili
             editor.apply();
 
             Intent intent = new Intent(this, MainActivity.class);
@@ -93,16 +95,9 @@ public class HiddenMain extends Activity {
         }
 
         if (resultCode == RESULT_CANCELED) {
-            showSnackbar(R.string.sign_in_cancelled);
             return;
         }
 
-        showSnackbar(R.string.unknown_sign_in_response);
-    }
-
-    @MainThread
-    private void showSnackbar(@StringRes int errorMessageRes) {
-        Snackbar.make(mRootView, errorMessageRes, Snackbar.LENGTH_LONG).show();
     }
 
 }

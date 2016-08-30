@@ -60,6 +60,7 @@ public class SignInActivity extends AppCompatActivity {
         startActivityForResult(
                 AuthUI.getInstance().createSignInIntentBuilder()
                         /*DEBUG*/
+                        .setLogo(R.drawable.tekken_logo)
                         .setIsSmartLockEnabled(false)
                         .setTheme(AuthUI.getDefaultTheme())
                         .setProviders(getSelectedProviders())

@@ -44,6 +44,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -60,7 +63,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -73,7 +79,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.RoundingMode;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -525,26 +534,18 @@ public class MainActivity extends AppCompatActivity
         //endregion
 
         //region Getting Data
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         //Caricamento email utente
         sharedPref = this.getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
         final String emailPreferences = sharedPref.getString("email", "rospo");
 
         //Caricamento Display Name
         defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String dysplayName = defaultPref.getString("display_name", "banana");
+        String displayName = defaultPref.getString("display_name", "banana");
+        displayName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
 
         //Caricamento immagine utente
         Resources res = getResources();
-        Bitmap src = null;
-        try {
-            src = MediaStore.Images.Media.getBitmap(this.getContentResolver(), FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl());
-        } catch (Exception e) {
-            //Handle problems from contentResolver or Firebase
-            src = BitmapFactory.decodeResource(res, R.drawable.rospo);
-        }
-        //Bitmap src = BitmapFactory.decodeResource(res, );
-        final RoundedBitmapDrawable dr = RoundedBitmapDrawableFactory.create(res, src);
-        dr.setCornerRadius(Math.max(src.getWidth(), src.getHeight()) / 2.0f);
 
         //Trovo la view della Nav Bar per cambiare gli elementi all interno (senza inflate)
         navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -554,14 +555,22 @@ public class MainActivity extends AppCompatActivity
         //Metto email utente da SharedPreferences
         TextView txtEmail = (TextView) headerLayout.findViewById(R.id.textView);
         txtEmail.setText(emailPreferences);
+        txtEmail.setText(user.getEmail());
 
         //Metto Display Name utente da DefaultSharedPreferences
         TextView txtName = (TextView) headerLayout.findViewById(R.id.textViewName);
-        txtName.setText(dysplayName);
+        txtName.setText(displayName);
 
         //Metto immagine utente
-        ImageView imgProfilo = (ImageView) headerLayout.findViewById(R.id.imageProfile);
-        imgProfilo.setImageDrawable(dr);
+        final ImageView imgProfilo = (ImageView) headerLayout.findViewById(R.id.imageProfile);
+         Glide.with(this).load((user.getPhotoUrl() != null ? user.getPhotoUrl() : R.drawable.rospo)).asBitmap().centerCrop().into(new BitmapImageViewTarget(imgProfilo) {
+                @Override
+                protected void setResource(Bitmap resource) {
+                    RoundedBitmapDrawable circularBitmapDrawable = RoundedBitmapDrawableFactory.create(MainActivity.this.getResources(), resource);
+                    circularBitmapDrawable.setCircular(true);
+                    imgProfilo.setImageDrawable(circularBitmapDrawable);
+                }
+            });
         //endregion
 
         //region Material Design
@@ -640,11 +649,12 @@ public class MainActivity extends AppCompatActivity
 
         //Caricamento Display Name
         defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String dysplayName = defaultPref.getString("display_name", "banana");
+        String displayName = defaultPref.getString("display_name", "banana");
+        displayName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
 
         //Metto Display Name utente da DefaultSharedPreferences
         TextView txtName = (TextView) headerLayout.findViewById(R.id.textViewName);
-        txtName.setText(dysplayName);
+        txtName.setText(displayName);
 
         String color = defaultPref.getString("color_list", "-1");
         switch (color) {
@@ -746,18 +756,30 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
 
         } else if (id == R.id.nav_signout) {
-            //Delete stored informations about user's login
-            SharedPreferences sharedPref = this.getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.remove("logged");
-            editor.remove("email");
-            editor.apply();
 
-            //Going back to Login Activity
-            Intent intent = new Intent(this, HiddenMain.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            finish(); //calls onDestroy()
-            startActivity(intent);
+            AuthUI.getInstance()
+                    .signOut(this)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                //Delete stored informations about user's login
+                                SharedPreferences sharedPref = MainActivity.this.getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPref.edit();
+                                editor.remove("logged");
+                                editor.remove("email");
+                                editor.apply();
+
+                                //Going back to Login Activity
+                                Intent intent = new Intent(MainActivity.this, HiddenMain.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                finish(); //calls onDestroy()
+                                startActivity(intent);
+                            } else {
+                               return;
+                            }
+                        }
+                    });
 
         } else if (id == R.id.nav_close) {
             finish(); //calls onDestroy(), free some resources
