@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -429,11 +430,15 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 if (fabPlay) {
                     //emula start button
+                    googleApiClient.connect();
+
                     startStop = R.drawable.ic_stop_white_24dp;
                     sbarMessage = "Recording your path";
                     fabPlay = false;
                 } else {
                     //emula log button
+                    writeLogs();
+
                     startStop = R.drawable.ic_play_arrow_white_24dp;
                     sbarMessage = "Path finished";
                     fabPlay = true;
@@ -541,8 +546,8 @@ public class MainActivity extends AppCompatActivity
 
         //Caricamento Display Name
         defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String displayName = defaultPref.getString("display_name", "banana");
-        displayName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+
+        String displayName = defaultPref.getString("display_name", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
 
         //Caricamento immagine utente
         Resources res = getResources();
@@ -555,11 +560,11 @@ public class MainActivity extends AppCompatActivity
         //Metto email utente da SharedPreferences
         TextView txtEmail = (TextView) headerLayout.findViewById(R.id.textView);
         txtEmail.setText(emailPreferences);
-        txtEmail.setText(user.getEmail());
 
         //Metto Display Name utente da DefaultSharedPreferences
         TextView txtName = (TextView) headerLayout.findViewById(R.id.textViewName);
         txtName.setText(displayName);
+
 
         //Metto immagine utente
         final ImageView imgProfilo = (ImageView) headerLayout.findViewById(R.id.imageProfile);
