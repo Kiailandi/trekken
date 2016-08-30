@@ -173,6 +173,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     protected void lookForNearPaths(){
+        googleApiClient.connect();
         nearpaths = new ArrayList<>();
         pointsFromDb2 = new ArrayList<>();
 
@@ -208,6 +209,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         nearpaths.clear();
+        googleApiClient.disconnect();
     }
 
     protected boolean isInRadius(LatLng pos){
@@ -436,7 +438,7 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     //emula log button
                     writeLogs();
-
+                    googleApiClient.disconnect();
                     startStop = R.drawable.ic_play_arrow_white_24dp;
                     sbarMessage = "     Path finished";
                     fabPlay = true;
@@ -676,6 +678,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_my_paths) {
+            googleApiClient.connect();
             mRef = FirebaseDatabase.getInstance().getReference();
             pointsFromDb = new ArrayList<>();
             Iterator<DataSnapshot> dataIterator = paths.getChildren().iterator();
@@ -707,7 +710,7 @@ public class MainActivity extends AppCompatActivity
                                     pointsFromDb.clear();
                                 }
                             } while (dataIterator.hasNext());
-
+            googleApiClient.disconnect();
         } else if (id == R.id.nav_near_paths) {
             lookForNearPaths();
         } else if (id == R.id.nav_manage) {
