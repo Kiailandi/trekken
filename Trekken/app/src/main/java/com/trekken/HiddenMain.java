@@ -76,6 +76,11 @@ public class HiddenMain extends Activity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
     @MainThread
     private void handleSignInResponse(int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
@@ -95,9 +100,9 @@ public class HiddenMain extends Activity {
         }
 
         if (resultCode == RESULT_CANCELED) {
+            finish();
             return;
         }
 
     }
-
 }
