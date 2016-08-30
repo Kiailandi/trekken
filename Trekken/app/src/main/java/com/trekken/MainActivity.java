@@ -260,6 +260,8 @@ public class MainActivity extends AppCompatActivity
             root.mkdirs();
         }
 
+        gMap.clear();
+
         filepath = new File(root, "Maps_Gps_LatLon" + ".txt");  // file path to save
         mRef = FirebaseDatabase.getInstance().getReference();
         try {
@@ -619,7 +621,7 @@ public class MainActivity extends AppCompatActivity
         trackColorNear = ContextCompat.getColor(this, R.color.yellow);
     }
 
-    @Override
+/*    @Override
     protected void onPause() {
         super.onPause();
         if (googleApiClient.isConnected()) {
@@ -634,7 +636,7 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         Log.e("LogsFunctions", " \nonResume .........");
         googleApiClient.connect();
-    }
+    }*/
 
     private void stopSensors() {
         snrManager.unregisterListener(listenerAccelerometer);
