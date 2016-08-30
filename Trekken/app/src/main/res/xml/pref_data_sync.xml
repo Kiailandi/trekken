@@ -20,7 +20,6 @@
             android:negativeButtonText="@null"
             android:positiveButtonText="@null"
             android:title="@string/pref_title_sync_frequency" />
-        <!--TODO magari frequenza sync Firebase? -->
 
         <!-- This preference simply launches an intent when selected. Use this UI sparingly, per
              design guidelines. -->
