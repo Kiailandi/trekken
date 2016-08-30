@@ -200,7 +200,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("display_name"));
             bindPreferenceSummaryToValue(findPreference("emergency_number"));
-            bindPreferenceSummaryToValue(findPreference("friend_list"));
             bindPreferenceSummaryToValue(findPreference("color_list"));
         }
 
