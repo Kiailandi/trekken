@@ -341,10 +341,6 @@ public class MainActivity extends AppCompatActivity
 
             } else {
                 Log.e("LogsFunctions", " \nLocation is null .........");
-
-//                final LatLng besenello = new LatLng(45.940966, 11.1091463);
-//                gMap.addMarker(new MarkerOptions().position(besenello).title("Marker a Besenello"));
-//                gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(besenello, 14));
             }
 
         } else
@@ -357,13 +353,12 @@ public class MainActivity extends AppCompatActivity
         //File Browser
         if (resultCode == -1) {
             _pathLoad = data.getStringExtra("GetPath") + "/" + data.getStringExtra("GetFileName");
-//            Toast.makeText(this, data.getStringExtra("GetPath") + "/" + data.getStringExtra("GetFileName"),
-//                    Toast.LENGTH_LONG).show();
 
             ArrayList<LatLng> loadedPathPoint = readFromFile();
             PolylineOptions options = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(loadedPathPoint);
             line = gMap.addPolyline(options);
         }
+
         // Fall Detection
         else if (requestCode == 2) {
             startSensors();
@@ -383,7 +378,6 @@ public class MainActivity extends AppCompatActivity
         gMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
             @Override
             public boolean onMyLocationButtonClick() {
-                //CareTo mCurrentLocation != null
                 movedByUser = false;
                 gMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
                 return true;
@@ -414,18 +408,17 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 if (fabPlay) {
-                    //emula start button
                     googleApiClient.connect();
 
                     startStop = R.drawable.ic_stop_white_24dp;
-                    sbarMessage = "     Recording your path";
+                    sbarMessage = "Recording your path";
                     fabPlay = false;
                 } else {
-                    //emula log button
                     writeLogs();
                     googleApiClient.disconnect();
+
                     startStop = R.drawable.ic_play_arrow_white_24dp;
-                    sbarMessage = "     Path finished";
+                    sbarMessage = "Path finished";
                     fabPlay = true;
                 }
 
@@ -442,9 +435,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
                 snrAccelerometer = sensorEvent.sensor;
-                //Log.i("Accelerometer1", (Float.toString(sensorEvent.values[0])));
-                //Log.i("Accelerometer2", (Float.toString(sensorEvent.values[1])));
-                //Log.i("Accelerometer3", (Float.toString(sensorEvent.values[2])));
                 if (snrAccelerometer.getType() == Sensor.TYPE_ACCELEROMETER) {
                     //Vectorial sum of x,y,z axis
                     rootSquare = Math.sqrt(Math.pow(sensorEvent.values[0], 2) + Math.pow(sensorEvent.values[1], 2) + Math.pow(sensorEvent.values[2], 2));
@@ -471,31 +461,31 @@ public class MainActivity extends AppCompatActivity
 
         //region Getting Data
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        //Caricamento email utente
+        //Loading email utente
         sharedPref = this.getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
         final String emailPreferences = sharedPref.getString("email", "rospo");
 
-        //Caricamento Display Name
+        //Loading Display Name
         //String displayName = defaultPref.getString("display_name", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
 
-        //Caricamento immagine utente
+        //Loading immagine utente
         Resources res = getResources();
 
-        //Trovo la view della Nav Bar per cambiare gli elementi all interno (senza inflate)
+        //Get Navigation view (no inflate)
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         headerLayout = navigationView.getHeaderView(0);
 
-        //Metto email utente da SharedPreferences
+        //Set Email from SharedPreferences
         TextView txtEmail = (TextView) headerLayout.findViewById(R.id.textView);
         txtEmail.setText(emailPreferences);
 
-        //Metto Display Name utente da DefaultSharedPreferences
+        //Set Display Name from DefaultSharedPreferences
         //TextView txtName = (TextView) headerLayout.findViewById(R.id.textViewName);
         //txtName.setText(displayName);
 
 
-        //Metto immagine utente
+        //Set User Picture
         final ImageView imgProfilo = (ImageView) headerLayout.findViewById(R.id.imageProfile);
          Glide.with(this).load((user.getPhotoUrl() != null ? user.getPhotoUrl() : R.drawable.rospo)).asBitmap().centerCrop().into(new BitmapImageViewTarget(imgProfilo) {
                 @Override
@@ -521,7 +511,6 @@ public class MainActivity extends AppCompatActivity
                 super.onDrawerOpened(drawerView);
                 //getActionBar().setTitle(mDrawerTitle);
 
-                //Testing stuff
                 final SwitchCompat swCompat = (SwitchCompat) findViewById(R.id.switchForActionBar);
                 swCompat.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -584,13 +573,13 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
 
-        //Caricamento Display Name
+        //Loading Display Name
         defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
         String displayName = defaultPref.getString("display_name", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
         if (displayName.equals("Mario Rossi"))
             displayName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
 
-        //Metto Display Name utente da DefaultSharedPreferences
+        //Set Display Name from DefaultSharedPreferences
         TextView txtName = (TextView) headerLayout.findViewById(R.id.textViewName);
         txtName.setText(displayName);
 
@@ -607,25 +596,8 @@ public class MainActivity extends AppCompatActivity
                 break; //Red
         }
 
-        trackColorNear = ContextCompat.getColor(this, R.color.yellow);
+        trackColorNear = ContextCompat.getColor(this, R.color.yellow); //Yellow
     }
-
-/*    @Override
-    protected void onPause() {
-        super.onPause();
-        if (googleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-            googleApiClient.disconnect();
-            Log.e("LogsFunctions", " \nonPause Location update stopped .........");
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.e("LogsFunctions", " \nonResume .........");
-        googleApiClient.connect();
-    }*/
 
     private void stopSensors() {
         snrManager.unregisterListener(listenerAccelerometer);
@@ -669,41 +641,42 @@ public class MainActivity extends AppCompatActivity
             mRef = FirebaseDatabase.getInstance().getReference();
             pointsFromDb = new ArrayList<>();
             Iterator<DataSnapshot> dataIterator = paths.getChildren().iterator();
-                            DataSnapshot pointsIterator;
-                            LatLng tmpPoint;
-                            boolean first = true;
+            DataSnapshot pointsIterator;
+            LatLng tmpPoint;
+            boolean first = true;
             DataSnapshot tmp;
 
-                            gMap.clear();
-                            //Check for every path if it has been created by the current user
-                            do {
-                                tmp = dataIterator.next(); //Current path
-                                if (tmp.child("creator").getValue().toString().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                                    Log.i("banana", "creatore riconosciuto");
-                                    pointsIterator = tmp.child("points");
-                                    for (DataSnapshot point : pointsIterator.getChildren()) {
-                                        Log.i("banana", point.toString());
-                                        tmpPoint = new LatLng(Double.parseDouble(point.child("latitude").getValue().toString()), Double.parseDouble(point.child("longitude").getValue().toString()));
-                                        pointsFromDb.add(tmpPoint);
-                                        if (first) {
-                                            gMap.addMarker(new MarkerOptions().position(tmpPoint).title("Start point"));
-                                            first = false;
-                                        }
-                                    }
+            gMap.clear();
+            //Check for every path if it has been created by the current user
+            do {
+                tmp = dataIterator.next(); //Current path
+                if (tmp.child("creator").getValue().toString().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                    try {
+                        pointsIterator = tmp.child("points");
+                        for (DataSnapshot point : pointsIterator.getChildren()) {
+                            tmpPoint = new LatLng(Double.parseDouble(point.child("latitude").getValue().toString()), Double.parseDouble(point.child("longitude").getValue().toString()));
+                            pointsFromDb.add(tmpPoint);
+                            if (first) {
+                                gMap.addMarker(new MarkerOptions().position(tmpPoint).title("Start point"));
+                                first = false;
+                            }
+                        }
 
-                                    first = true;
-                                    PolylineOptions options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
-                                    line = gMap.addPolyline(options2);
-                                    pointsFromDb.clear();
-                                }
-                            } while (dataIterator.hasNext());
+                        first = true;
+                        PolylineOptions options2 = new PolylineOptions().width(lineWidth).color(trackColor).geodesic(true).addAll(pointsFromDb);
+                        line = gMap.addPolyline(options2);
+                        pointsFromDb.clear();
+                    } catch (Exception e) {
+                        Log.e("ERROR", "Can't load My_Paths");
+                    }
+                }
+            } while (dataIterator.hasNext());
             googleApiClient.disconnect();
         } else if (id == R.id.nav_near_paths) {
             lookForNearPaths();
         } else if (id == R.id.nav_manage) {
             Intent intent = new Intent(this, SettingsActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            //finish();
             startActivity(intent);
 
         } else if (id == R.id.nav_signout) {
@@ -735,8 +708,9 @@ public class MainActivity extends AppCompatActivity
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+
         //When an item in the Drawer gets pressed, close the Drawer
+        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -800,13 +774,6 @@ public class MainActivity extends AppCompatActivity
             movedByUser = true;
 
         }
-//        else if (i == GoogleMap.OnCameraMoveStartedListener
-//                .REASON_API_ANIMATION) {
-//            Log.d("TestEvent", "The user tapped something on the map.");
-//        } else if (i == GoogleMap.OnCameraMoveStartedListener
-//                .REASON_DEVELOPER_ANIMATION) {
-//            Log.d("TestEvent", "The app moved the camera.");
-//        }
     }
 }
 
