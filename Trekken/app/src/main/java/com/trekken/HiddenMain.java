@@ -47,7 +47,6 @@ public class HiddenMain extends Activity {
         if(textData.equals("no") && FirebaseAuth.getInstance().getCurrentUser() == null) {
             startActivityForResult(
                     AuthUI.getInstance().createSignInIntentBuilder()
-                            /*DEBUG - set to true on production*/
                             .setLogo(R.drawable.tekken_logo)
                             .setIsSmartLockEnabled(false)
                             .setTheme(R.style.AppTheme)
