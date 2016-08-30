@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity
     static final double threshold = 1.0; //TODO rimettere 1.5 a fine test
     private DataSnapshot paths;
 
-    ArrayList<LatLng> pathPoints, pointsFromDb;
+    ArrayList<LatLng> pathPoints, pointsFromDb, pointsFromDb2;
     ArrayList<String> nearpaths;
     Polyline line;
     ArrayList<Float> pathPointsAccuracy;
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity
 
     protected void lookForNearPaths(){
         nearpaths = new ArrayList<>();
-        pointsFromDb = new ArrayList<>();
+        pointsFromDb2 = new ArrayList<>();
 
         DataSnapshot tmp;
 
@@ -192,9 +192,9 @@ public class MainActivity extends AppCompatActivity
         for(String key : nearpaths) {
             for(DataSnapshot point : paths.child(key).child("points").getChildren()){
                 LatLng tmpPoint = new LatLng(Double.parseDouble(point.child("latitude").getValue().toString()), Double.parseDouble(point.child("longitude").getValue().toString()));
-                pointsFromDb.add(tmpPoint);
+                pointsFromDb2.add(tmpPoint);
                 //disegna percorso qui
-                PolylineOptions options = new PolylineOptions().width(lineWidth).color(trackColorNear).geodesic(true).addAll(pointsFromDb);
+                PolylineOptions options = new PolylineOptions().width(lineWidth).color(trackColorNear).geodesic(true).addAll(pointsFromDb2);
                 line = gMap.addPolyline(options);
 
                 if(i == 0) {
@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }
 
-            pointsFromDb.clear();
+            pointsFromDb2.clear();
             i = 0;
         }
 
@@ -660,7 +660,8 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            gMap.clear();
+            if (fabPlay)
+                gMap.clear();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -672,29 +673,25 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        DataSnapshot tmp;
         if (id == R.id.nav_my_paths) {
             mRef = FirebaseDatabase.getInstance().getReference();
             pointsFromDb = new ArrayList<>();
-            mRef.child("paths/").addValueEventListener(
-                    new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Iterator<DataSnapshot> dataIterator = dataSnapshot.getChildren().iterator();
+            Iterator<DataSnapshot> dataIterator = paths.getChildren().iterator();
                             DataSnapshot pointsIterator;
                             LatLng tmpPoint;
                             boolean first = true;
+            DataSnapshot tmp;
 
                             gMap.clear();
                             //Check for every path if it has been created by the current user
                             do {
-                                DataSnapshot tmp = dataIterator.next(); //Current path
+                                tmp = dataIterator.next(); //Current path
                                 if (tmp.child("creator").getValue().toString().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                                     Log.i("banana", "creatore riconosciuto");
                                     pointsIterator = tmp.child("points");
-                                    for (DataSnapshot item : pointsIterator.getChildren()) {
-                                        Log.i("banana", item.toString());
-                                        tmpPoint = new LatLng(Double.parseDouble(item.child("latitude").getValue().toString()), Double.parseDouble(item.child("longitude").getValue().toString()));
+                                    for (DataSnapshot point : pointsIterator.getChildren()) {
+                                        Log.i("banana", point.toString());
+                                        tmpPoint = new LatLng(Double.parseDouble(point.child("latitude").getValue().toString()), Double.parseDouble(point.child("longitude").getValue().toString()));
                                         pointsFromDb.add(tmpPoint);
                                         if (first) {
                                             gMap.addMarker(new MarkerOptions().position(tmpPoint).title("Start point"));
@@ -708,13 +705,6 @@ public class MainActivity extends AppCompatActivity
                                     pointsFromDb.clear();
                                 }
                             } while (dataIterator.hasNext());
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
 
         } else if (id == R.id.nav_near_paths) {
             lookForNearPaths();
