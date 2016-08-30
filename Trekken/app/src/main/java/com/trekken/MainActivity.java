@@ -181,8 +181,14 @@ public class MainActivity extends AppCompatActivity
 
         for (DataSnapshot path : paths.getChildren()) {
             tmp = path.child("points").child("0");
-            if(isInRadius(new LatLng(Double.parseDouble(tmp.child("latitude").getValue().toString()), Double.parseDouble(tmp.child("longitude").getValue().toString())))){
-                nearpaths.add(path.getKey());
+            try {
+                if (isInRadius(new LatLng(Double.parseDouble(tmp.child("latitude").getValue().toString()), Double.parseDouble(tmp.child("longitude").getValue().toString())))) {
+                    nearpaths.add(path.getKey());
+                }
+            }
+            catch(NullPointerException ex)
+            {
+                Log.d("Firebase", path.getKey().toString());
             }
         }
 
