@@ -4,7 +4,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Clear Map</string>
     <string name="nome_cognome">Mario Rossi</string>
     <string name="username">rospo</string>
     <string name="title_activity_login">Trekken - Login</string>
