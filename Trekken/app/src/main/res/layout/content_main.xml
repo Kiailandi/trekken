@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:focusable="true"
+    android:weightSum="100"
     android:focusableInTouchMode="true"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.trekken.MainActivity"
@@ -17,55 +15,19 @@
     <fragment
         android:id="@+id/map"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_below="@+id/btnLog"
-        android:layout_alignParentEnd="true" />
+        android:layout_height="0dp"
+        android:layout_weight="90"
+        class="com.google.android.gms.maps.SupportMapFragment" />
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Log"
-        android:id="@+id/btnLog"
-        android:layout_alignTop="@+id/btnLoad"
-        android:layout_toStartOf="@+id/btnStart" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:id="@+id/txtBottom"
+        android:layout_weight="10"
+        android:paddingBottom="0dp"
+        android:gravity="center"
+        android:background="@color/colorPrimary"
+        android:textColor="@android:color/primary_text_dark"
+        android:layout_below="@id/map" />
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start"
-        android:id="@+id/btnStart"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true" />
-
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Stop"
-        android:id="@+id/btnStop"
-        android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/btnNear" />
-
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Carica Log"
-        android:id="@+id/btnLoad"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
-
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Near"
-        android:id="@+id/btnNear"
-        android:layout_alignTop="@+id/btnLog"
-        android:layout_toStartOf="@+id/btnLog" />
-
-
-</RelativeLayout>
+</LinearLayout>

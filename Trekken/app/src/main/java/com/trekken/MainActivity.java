@@ -112,12 +112,6 @@ public class MainActivity extends AppCompatActivity
     static final double threshold = 1.0; //TODO rimettere 1.5 a fine test
     private DataSnapshot paths;
 
-    Button btnLog;
-    Button btnStart;
-    Button btnStop;
-    Button btnLoad;
-    Button btnNear;
-
     ArrayList<LatLng> pathPoints, pointsFromDb;
     ArrayList<String> nearpaths;
     Polyline line;
@@ -424,6 +418,10 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -433,76 +431,22 @@ public class MainActivity extends AppCompatActivity
                     googleApiClient.connect();
 
                     startStop = R.drawable.ic_stop_white_24dp;
-                    sbarMessage = "Recording your path";
+                    sbarMessage = "     Recording your path";
                     fabPlay = false;
                 } else {
                     //emula log button
                     writeLogs();
 
                     startStop = R.drawable.ic_play_arrow_white_24dp;
-                    sbarMessage = "Path finished";
+                    sbarMessage = "     Path finished";
                     fabPlay = true;
                 }
 
                 fab.setImageResource(startStop);
-                Snackbar.make(view, sbarMessage, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                TextView txtBottom = (TextView) MainActivity.this.findViewById(R.id.txtBottom);
+                txtBottom.setText(sbarMessage);
             }
         });
-
-        //region Button Listeners Setup
-        final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-        btnStart = (Button) findViewById(R.id.btnStart);
-
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.e("LogsFunctions", "btnStart .........");
-                googleApiClient.connect();
-            }
-        });
-
-        btnStop = (Button) findViewById(R.id.btnStop);
-
-        btnStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.e("LogsFunctions", "btnStop .........");
-                googleApiClient.disconnect();
-            }
-        });
-
-        btnLog = (Button) findViewById(R.id.btnLog);
-
-        btnLog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                writeLogs();
-            }
-        });
-
-        btnLoad = (Button) findViewById(R.id.btnLoad);
-
-        btnLoad.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-
-        btnNear = (Button)findViewById(R.id.btnNear);
-
-        btnNear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                lookForNearPaths();
-            }
-        });
-
-        Log.e("LogsFunctions", "Map_v2 onCreate " + DateFormat.getTimeInstance().format(new Date()) + " .........");
-        //endregion
 
         //region Accelerometer
         snrManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
