@@ -1,12 +1,14 @@
 package com.trekken;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
 import android.telephony.SmsManager;
@@ -27,6 +29,7 @@ public class FallDetection extends Activity {
     private Handler pbHandler;
     private Runnable r;
     private Ringtone alarm;
+    private Vibrator v;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,11 +76,11 @@ public class FallDetection extends Activity {
         }
         alarm = RingtoneManager.getRingtone(getApplicationContext(), uriAlarm);
 
-        // Launching the Popup Dialog
-        // helpDialog.setCancelable(false);
-        // helpDialog.show();
-
         alarm.play();
+        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        long[] pattern = {0, 100, 1000};
+        if (defaultPref.getBoolean("notifications_new_message_vibrate", false))
+            v.vibrate(pattern, 0);
 
         // Handler functioning as a Timer with tick = 1s
         // Decrease the value of the ProgressBar until stopped by Button or it will send an Emergency Sms
@@ -92,6 +95,7 @@ public class FallDetection extends Activity {
                     //pb.setProgress(45);
                     sendEmergencySMS();
                     alarm.stop();
+                    v.cancel();
                     // startSensors();
                     // helpDialog.dismiss();
 
@@ -112,6 +116,7 @@ public class FallDetection extends Activity {
                 //Reset the AlertDialog and its elements
                 pbHandler.removeCallbacks(r);
                 alarm.stop();
+                v.cancel();
                 // startSensors();
                 // helpDialog.dismiss();
 
@@ -129,6 +134,7 @@ public class FallDetection extends Activity {
         //Reset the AlertDialog and its elements
         pbHandler.removeCallbacks(r);
         alarm.stop();
+        v.cancel();
         // startSensors();
 
         Intent returnIntent = new Intent();

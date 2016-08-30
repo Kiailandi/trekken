@@ -545,9 +545,7 @@ public class MainActivity extends AppCompatActivity
         final String emailPreferences = sharedPref.getString("email", "rospo");
 
         //Caricamento Display Name
-        defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
-
-        String displayName = defaultPref.getString("display_name", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+        //String displayName = defaultPref.getString("display_name", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
 
         //Caricamento immagine utente
         Resources res = getResources();
@@ -562,8 +560,8 @@ public class MainActivity extends AppCompatActivity
         txtEmail.setText(emailPreferences);
 
         //Metto Display Name utente da DefaultSharedPreferences
-        TextView txtName = (TextView) headerLayout.findViewById(R.id.textViewName);
-        txtName.setText(displayName);
+        //TextView txtName = (TextView) headerLayout.findViewById(R.id.textViewName);
+        //txtName.setText(displayName);
 
 
         //Metto immagine utente
@@ -630,6 +628,7 @@ public class MainActivity extends AppCompatActivity
 
         //Starting GPS and Accelerometer Services
         createLocationRequest();
+        defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
         if (defaultPref.getBoolean("fall_detection", true))
             startSensors();
 
@@ -654,8 +653,9 @@ public class MainActivity extends AppCompatActivity
 
         //Caricamento Display Name
         defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String displayName = defaultPref.getString("display_name", "banana");
-        displayName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+        String displayName = defaultPref.getString("display_name", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+        if (displayName.equals("Mario Rossi"))
+            displayName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
 
         //Metto Display Name utente da DefaultSharedPreferences
         TextView txtName = (TextView) headerLayout.findViewById(R.id.textViewName);
