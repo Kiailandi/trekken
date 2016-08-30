@@ -46,8 +46,6 @@
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".SignInActivity" />
-        <activity android:name=".WelcomeActivity" />
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
