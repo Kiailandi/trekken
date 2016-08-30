@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity
 
     private ArrayList<LatLng> readFromFile() {
         ArrayList<LatLng> ret = null;
-        BufferedReader inputStream = null;
+        BufferedReader inputStream;
 
         try {
             ret = new ArrayList<>();
@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity
         for (DataSnapshot path : paths.getChildren()) {
             tmp = path.child("points").child("0");
             if(isInRadius(new LatLng(Double.parseDouble(tmp.child("latitude").getValue().toString()), Double.parseDouble(tmp.child("longitude").getValue().toString())))){
-                nearpaths.add(path.getKey().toString());
+                nearpaths.add(path.getKey());
             }
         }
 
@@ -724,8 +724,6 @@ public class MainActivity extends AppCompatActivity
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 finish(); //calls onDestroy()
                                 startActivity(intent);
-                            } else {
-                               return;
                             }
                         }
                     });
@@ -748,27 +746,6 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     //GoogleApiClient.ConnectionCallbacks provides call back for GoogleApiClient onConnected.

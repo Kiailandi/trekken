@@ -25,28 +25,6 @@
             android:singleLine="true"
             android:title="@string/pref_title_emergency_number" />
     </PreferenceCategory>
-    <PreferenceCategory
-        android:key="setting_title_social"
-        android:title="Social">
-
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="example_switch"
-            android:summary="@string/pref_description_social_recommendations"
-            android:title="@string/pref_title_social_recommendations" />
-
-        <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
-             dismiss it. -->
-        <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
-        <ListPreference
-            android:defaultValue="-1"
-            android:entries="@array/friend_list_titles"
-            android:entryValues="@array/friend_list_values"
-            android:key="friend_list"
-            android:negativeButtonText="@null"
-            android:positiveButtonText="@null"
-            android:title="@string/pref_title_add_friends_to_messages" />
-    </PreferenceCategory>
 
     <PreferenceCategory
         android:key="setting_title_personalization"

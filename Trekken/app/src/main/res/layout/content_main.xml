@@ -27,6 +27,7 @@
         android:paddingBottom="0dp"
         android:gravity="center"
         android:background="@color/colorPrimary"
+        android:textSize="18sp"
         android:textColor="@android:color/primary_text_dark"
         android:layout_below="@id/map" />
 
