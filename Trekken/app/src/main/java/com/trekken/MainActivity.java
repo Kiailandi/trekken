@@ -592,8 +592,12 @@ public class MainActivity extends AppCompatActivity
         //Loading Display Name
         defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
         String displayName = defaultPref.getString("display_name", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
-        if (displayName.equals("Mario Rossi"))
+        if (displayName.equals("Mario Rossi")) {
             displayName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+            SharedPreferences.Editor edt2 = defaultPref.edit();
+            edt2.putString("display_name", FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+            edt2.apply();
+        }
 
         //Set Display Name from DefaultSharedPreferences
         TextView txtName = (TextView) headerLayout.findViewById(R.id.textViewName);
