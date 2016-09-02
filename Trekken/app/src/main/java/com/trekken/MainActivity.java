@@ -707,6 +707,12 @@ public class MainActivity extends AppCompatActivity
                                 editor.remove("email");
                                 editor.apply();
 
+                                //Reset Display Name
+                                defaultPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                                SharedPreferences.Editor editorDefault = defaultPref.edit();
+                                editorDefault.putString("display_name", "Mario Rossi");
+                                editorDefault.apply();
+
                                 //Going back to Login Activity
                                 Intent intent = new Intent(MainActivity.this, HiddenMain.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
