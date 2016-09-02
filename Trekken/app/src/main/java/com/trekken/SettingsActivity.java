@@ -261,6 +261,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+            bindPreferenceSummaryToValue(findPreference("fall_detection"));
         }
 
         @Override

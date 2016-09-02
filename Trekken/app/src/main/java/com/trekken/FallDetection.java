@@ -62,14 +62,13 @@ public class FallDetection extends Activity {
         //Setting up the alarm sound
         Uri uriAlarm;
         defaultPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String alarmRingtone = defaultPref.getString("notifications_alarm_ringtone", "notFound");
+        final String alarmRingtone = defaultPref.getString("notifications_alarm_ringtone", "notFound");
         if (!alarmRingtone.equals("notFound")) {
             uriAlarm = Uri.parse(alarmRingtone);
         } else {
             uriAlarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         }
         alarm = RingtoneManager.getRingtone(getApplicationContext(), uriAlarm);
-
         alarm.play();
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         long[] pattern = {0, 100, 1000};
@@ -83,6 +82,8 @@ public class FallDetection extends Activity {
             public void run() {
                 if (pb.getProgress() > 1) {
                     pb.setProgress(pb.getProgress() - 1);
+                    if (!alarm.isPlaying())
+                        alarm.play();
                     pbHandler.postDelayed(this, 500);
                 } else {
                     pbHandler.removeCallbacks(this);

@@ -124,6 +124,8 @@ public class MainActivity extends AppCompatActivity
     FileWriter writer;
     int waitToStart = 1, trackColor, trackColorNear, startStop, firstLocation = 0;
     final int MY_PERMISSIONS_REQUEST_GPS = 166;
+    final int MY_PERMISSIONS_REQUEST_SMS = 167;
+    final int MY_PERMISSIONS_REQUEST_VIBRATE = 168;
     final double radius = 1.24274;
 
     private ArrayList<LatLng> readFromFile() {
@@ -748,9 +750,8 @@ public class MainActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_GPS: {
-                // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.i("LogFunctions", "GPS permission granted");
+                    Log.i("LogsFunctions", "GPS permission granted");
                     if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);  //return this PendingResult<Status> pendingResult;
                         afterOnConnected = true;
@@ -759,6 +760,23 @@ public class MainActivity extends AppCompatActivity
                     finish();
                 }
             }
+            break;
+
+            case MY_PERMISSIONS_REQUEST_SMS:
+            case MY_PERMISSIONS_REQUEST_VIBRATE: {
+                boolean fd;
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.i("LogsFunctions", "SMS/VIBRATE permission granted");
+                    fd = true;
+                } else {
+                    stopSensors();
+                    fd = false;
+                }
+                SharedPreferences.Editor edt = defaultPref.edit();
+                edt.putBoolean("fall_detection", fd);
+                edt.apply();
+            }
+            break;
         }
     }
     //GoogleApiClient.ConnectionCallbacks provides call back for GoogleApiClient onConnected.
@@ -772,12 +790,16 @@ public class MainActivity extends AppCompatActivity
                     LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);  //return this PendingResult<Status> pendingResult;
                     afterOnConnected = true;
                 } else {
-                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
+                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_GPS);
-                    }
                 }
             }
+        }
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED)
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, MY_PERMISSIONS_REQUEST_SMS);
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.VIBRATE) != PackageManager.PERMISSION_GRANTED)
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.VIBRATE}, MY_PERMISSIONS_REQUEST_VIBRATE);
         }
     }
 
