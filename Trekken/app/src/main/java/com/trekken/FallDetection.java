@@ -144,7 +144,7 @@ public class FallDetection extends Activity {
 
         String message = "Trekken user " + user + " might be in danger while hiking and has requested your aid!";
         if (lat != 0.0)
-            message += "\n Latitude: " + Double.toString(lat) + "\n Longitude: " + Double.toString(lon);
+            message += "http://www.google.com/maps/place/" + Double.toString(lat) + "," + Double.toString(lon);
 
         try {
             SmsManager smsManager = SmsManager.getDefault();
