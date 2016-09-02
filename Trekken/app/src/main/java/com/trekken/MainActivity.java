@@ -15,6 +15,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -22,6 +23,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -121,6 +123,7 @@ public class MainActivity extends AppCompatActivity
     File filepath;
     FileWriter writer;
     int waitToStart = 1, trackColor, trackColorNear, startStop, firstLocation = 0;
+    final int MY_PERMISSIONS_REQUEST_GPS = 166;
     final double radius = 1.24274;
 
     private ArrayList<LatLng> readFromFile() {
@@ -142,14 +145,12 @@ public class MainActivity extends AppCompatActivity
                     ret.add(new LatLng(Double.valueOf(split[1]), Double.valueOf(split[2])));
                 }
             }
-
             inputStream.close();
         } catch (FileNotFoundException e) {
             Log.e("File", "File not found: " + e.toString());
         } catch (IOException e) {
             Log.e("File", "Can not read file: " + e.toString());
         }
-
         return ret;
     }
 
@@ -743,6 +744,19 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_GPS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.i("LogFunctions", "GPS permission granted");
+                } else {
+                    finish();
+                }
+            }
+        }
+    }
     //GoogleApiClient.ConnectionCallbacks provides call back for GoogleApiClient onConnected.
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -753,6 +767,11 @@ public class MainActivity extends AppCompatActivity
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, mLocationRequest, this);  //return this PendingResult<Status> pendingResult;
                     afterOnConnected = true;
+                } else {
+                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_GPS);
+                    }
                 }
             }
         }
